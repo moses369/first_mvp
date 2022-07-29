@@ -1,8 +1,10 @@
 import sql from "./database/db.js";
 import express from "express";
+import dotenv from "dotenv";
 
+dotenv.config();
 const app = express();
-const { PORT = 8000 } = process.env;
+const { PORT } = process.env;
 
 const products = express.Router();
 const users = express.Router();
@@ -118,7 +120,7 @@ users.route("/:id").patch(
         const item = (await sql`SELECT * FROM  users WHERE id = ${id} `)[0];
         if (item) {
           next();
-        } else {    
+        } else {
           next("route");
         }
       }

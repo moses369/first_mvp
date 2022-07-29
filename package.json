@@ -17,6 +17,7 @@
     "postgres": "^3.2.4"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "dotenv": "^16.0.1"
   }
 }
