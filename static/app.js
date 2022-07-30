@@ -1,3 +1,19 @@
+
+getToken();
+const test = async () => {
+  try {
+    const headers = new Headers()
+    headers.append('Authorization',`Bearer ${getToken()}`)
+    const data = await sendReq( '/api/products', {
+      headers, method:'GET'
+    });
+    console.log(data);
+    
+  } catch (err) {
+    console.error(err);
+  }
+};
+test()
 async function sendReq(url, options, consoleMsg) {
   try {
     const res = await fetch(url, options);

@@ -1,6 +1,8 @@
 import sql from "./database/db.js";
 import express from "express";
 import dotenv from "dotenv";
+import fetch from 'node-fetch';
+import token from './token'
 
 dotenv.config();
 const app = express();
@@ -43,10 +45,8 @@ app.use("/api/users", users);
 products
   .route("/")
   .get(async (req, res, next) => {
-    try {
-      const products = await sql`
-        SELECT * FROM products ORDER BY id ASC`;
-      res.json(products);
+    try { 
+   
     } catch (err) {
       next(err);
     }
