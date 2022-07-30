@@ -11,31 +11,7 @@ const { PORT, API_TOKEN } = process.env;
 
 
 
-const sendPost = async (req, res, next, table) => {
-  try {
-    const added = (
-      await sql` 
-     INSERT INTO ${sql(`${table}`)} ${sql(req.body)} RETURNING *`
-    )[0];
-    res.json(added);
-  } catch (err) {
-    next(err);
-  }
-};
-const sendPatch = async (req, res, next, table) => {
-  try {
-    const { id } = req.params;
-    const updated = (
-      await sql` 
-     UPDATE ${sql(`${table}`)} SET ${sql(
-        req.body
-      )} WHERE id = ${id} RETURNING *`
-    )[0];
-    res.json(updated);
-  } catch (err) {
-    next(err);
-  }
-};
+
 
 app.use(cors())
 app.set('proxy server',1)

@@ -1,10 +1,8 @@
-
-async function sendReq(url, options, consoleMsg) {
+async function sendReq(url, options) {
   try {
     const res = await fetch(url, options);
     if (res.status >= 200 && res.status < 300) {
       const data = await res.json();
-      console.log(consoleMsg, data);
       return data;
     } else {
       const body = await res.text();
@@ -14,3 +12,10 @@ async function sendReq(url, options, consoleMsg) {
     console.error(err);
   }
 }
+
+$('.meat').on('click',async e =>{
+
+  const data = await sendReq('/api/products?filter.term=meat&filter.limit=5')
+  console.log(data);
+  
+})
