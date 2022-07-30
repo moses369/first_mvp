@@ -44,7 +44,7 @@ const sendReq = async (req, next, id = "") => {
     if (apiRes.status >= 200 && apiRes.status < 300) {
       const data = await apiRes.json();
       if (NODE_ENV !== "production") {
-        console.log(apiRes)
+        console.log('RequestURL',req.url)
       }
       return data;
     } else {
