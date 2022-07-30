@@ -4,89 +4,29 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/25b6137a6f.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script defer src="./app.js"></script>
-    <title>Store</title>
+    <title>Shopping List</title>
   </head>
   <body>
-    <h1>Connected</h1>
-    <!-- USER INTERACTION -->
-    <button class="btn getUsers">Users</button>
-    <div class="create">
-      <h2>Create User</h2>
-
-      <form class="createUser">
-        <label for="name">User Name</label>
-        <input type="text" name="name" id="uName" required autocomplete="off" />
-
-        <label for="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          required
-          autocomplete="off"
-        />
-
-        <label for="tel">Phone</label>
-        <input type="tel" name="tel" id="phone" autocomplete="off" />
-
-        <label for="address">Address</label>
-        <input
-          type="text"
-          name="address"
-          id="address"
-          required
-          autocomplete="off"
-        />
-        <input type="submit" />
-      </form>
-    </div>
-    <div class="update">
-      <h2>Update User</h2>
-      <form class="updateUser">
-        <label for="name">User Name</label>
-        <input type="text" name="name" id="uName" autocomplete="off" />
-
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email" autocomplete="off" />
-
-        <label for="tel">Phone</label>
-        <input type="tel" name="tel" id="phone" autocomplete="off" />
-
-        <label for="address">Address</label>
-        <input type="text" name="address" id="address" autocomplete="off" />
-        <input type="submit" />
-      </form>
-    </div>
-    <!-- END USER INTERACTION -->
-    <!--  PRODUCTS INTERACTION -->
-    <button class="btn getProducts">Products</button>
-    <form class="createProduct">
-      <label for="name">Product Name</label>
-      <input type="text" name="name" id="pName" required autocomplete="off" />
-
-      <label for="image">Image URL</label>
-      <input type="url" name="image" id="image" required autocomplete="off" />
-
-      <label for="price">Price</label>
-      <input
-        type="number "
-        name="price"
-        id="price"
-        autocomplete="off"
-        min=".01"
-        required
-      />
-
-      <label for="perLb">Is it priced per lb?</label>
-      <input type="radio" id="perLbYes" name="perLb" value="true" />
-      <label for="yeperLbYes">Yes</label>
-      <input type="radio" id="perLbNo" name="perLb" value="false" checked />
-      <label for="perLbNo">No</label>
-
-      <input type="submit" />
-    </form>
-    <!-- END PRODUCTS INTERACTION -->
+    <main class="container">
+      <div class="shoppingList">
+        <form action="" class="addToList">
+          <input type="text" autocomplete="off" name="product">
+          <input type="submit">
+        </form>
+        <div class="itemList">
+          <div class="item"> <a href="#" data-url='/api/products?filter.term=${newItem}' class='itemLink'>${newItem}</a>
+            <i class="fa-solid fa-trash" data-trash='true'></i>
+          </div>  
+        </div>
+      </div>
+      <div class="productResults">
+      </div>
+    </main>
   </body>
 </html>

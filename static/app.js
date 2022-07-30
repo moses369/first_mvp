@@ -1,9 +1,8 @@
-async function sendReq(url, options, consoleMsg) {
+async function sendReq(url, options) {
   try {
     const res = await fetch(url, options);
     if (res.status >= 200 && res.status < 300) {
       const data = await res.json();
-      console.log(consoleMsg, data);
       return data;
     } else {
       const body = await res.text();
@@ -13,95 +12,54 @@ async function sendReq(url, options, consoleMsg) {
     console.error(err);
   }
 }
-const postHeader = new Headers();
-postHeader.append("Content-Type", "application/json");
 
-/*************** USER PATH INTERACTION ****************/
-//GET USERS
-const getUsers = document.querySelector(".getUsers");
-getUsers.addEventListener("click", async (e) => {
-  const data = await sendReq("/api/users", { method: "GET" }, "GET USERS");
-});
-
-// CREATE NEW USER
-createUser.addEventListener("submit", async (e) => {
+$(".addToList").on("submit", async (e) => {
   e.preventDefault();
-  const name = $(`.updateUser #uName`).val();
-  const email = $(`.updateUser #email`).val();
-  const phone = $(`.updateUser #phone`).val();
-  const address = $(`.updateUser #address`).val();
-  let newUser;
-  if (!phone) {
-    newUser = { name, email, address };
-  } else {
-    newUser = { name, email, phone, address };
-  }
-  sendReq(
-    "/api/users",
-    {
-      method: "POST",
-      body: JSON.stringify(newUser),
-      headers: postHeader,
-    },
-    "POST USER "
+  const newItem = $(`.addToList input[name='product']`).val();
+  $(`.itemList`).append(
+    `
+    <div class="item"> 
+      <a href="#" data-url='/api/products?filter.term=${newItem}' data-item='${newItem}' class='itemLink'>${newItem}</a>
+      <i class="fa-solid fa-trash" data-trash='true'></i>
+    </div>  
+  `
   );
-});
-// UPDATE  USER
-updateUser.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const name = $(`.updateUser #uName`).val();
-  const email = $(`.updateUser #email`).val();
-  const phone = $(`.updateUser #phone`).val();
-  const address = $(`.updateUser #address`).val();
-  const newUser = { name, email, phone, address };
 
-  sendReq(
-    "/api/users",
-    {
-      method: "PATCH",
-      body: JSON.stringify(newUser),
-      headers: postHeader,
-    },
-    "PATCH USER "
-  );
+  $(`.addToList input[name='product']`).val("");
 });
-/*************** END USER PATH INTERACTION ****************/
-
-/***************  PRODUCT PATH INTERACTION ****************/
-// GET PRODUCTS
-const getProducts = document.querySelector(".getProducts");
-getProducts.addEventListener("click", async (e) => {
-  const data = await sendReq(
-    "/api/products",
-    { method: "GET" },
-    "GET PRODUCTS"
-  );
-});
-
-// CREATE NEW PRODUCT
-const createProduct = document.querySelector(`.createProduct`);
-createProduct.addEventListener("submit", async (e) => {
-  const PERLB = createProduct.querySelectorAll(`input[name = 'perLb'] `);
-  e.preventDefault();
-  const name = $(`.createProduct #pName`).val();
-  const image = $(`.createProduct #image`).val();
-  const price = $(`.createProduct #price`).val();
-  let per_lb;
-  for (const opt of PERLB) {
-    if (opt.checked) {
-      per_lb = opt.value;
-      break;
+const shopingList = document.querySelector(".shoppingList .itemList");
+shopingList.addEventListener("click", async (e) => {
+  const trash = e.target.dataset.trash;
+  const url = e.target.dataset.url;
+  if (url) {
+    const { data } = await sendReq(url);
+    $(".productResults").empty();
+    if (data) {
+      for (let product of data) {
+        const { images, description, categories, productId, items, temperature } = product;
+        if (!images[0].sizes[3].url) continue;
+        let pImage;
+        for (let img of images) {
+          const { perspective, sizes } = img;
+          if (perspective === "front") pImage = sizes[3].url;
+        }
+        let refrigerate=''
+        if(temperature.indicator === 'Refrigerated') refrigerate ='Refrigerate'
+        $(".productResults").append(`
+        <div class="product" data-url="/api/products/${productId}" data-id="${productId}" data-fav="false">
+            <img class="image" src="${pImage}" alt="">
+            <h3 class="categories">${categories.join(", ")}</h3>
+            <h2 class="description">${description}</h2>
+            <p class="price">Price: ${items[0].price.regular} per ${
+              items[0].soldBy
+            }</p>
+            <p class='info'> Weight: ${items[0].size} <br>${refrigerate}</p>
+          </div>
+        `);
+      }
     }
+    console.log(url, data);
+  } else if (trash) {
+    e.target.parentElement.remove();
   }
-  const newProduct = { name, image, price, per_lb };
-  sendReq(
-    "/api/products",
-    {
-      method: "POST",
-      body: JSON.stringify(newProduct),
-      headers: postHeader,
-    },
-    "POST PRODUCT "
-  );
 });
-/*************** END  PRODUCT PATH INTERACTION ****************/
