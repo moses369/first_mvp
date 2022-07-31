@@ -2,7 +2,14 @@ async function sendReq(url, options) {
   try {
     const res = await fetch(url, options);
     if (res.status >= 200 && res.status < 300) {
-      const data = await res.json();
+      let data;
+      if (res.status !== 204) {
+        data = await res.json();
+      } else {
+        data = await res.text();
+      }
+      console.log("RES STATUS", res.status);
+
       return data;
     } else {
       const body = await res.text();
@@ -27,32 +34,51 @@ $(".addToList").on("submit", async (e) => {
 
   $(`.addToList input[name='product']`).val("");
 });
-const shopingList = document.querySelector(".shoppingList .itemList");
-shopingList.addEventListener("click", async (e) => {
+
+$(".shoppingList .itemList").on("click", async (e) => {
   const trash = e.target.dataset.trash;
   const url = e.target.dataset.url;
+
   if (url) {
     const { data } = await sendReq(url);
     $(".productResults").empty();
     if (data) {
       for (let product of data) {
-        const { images, description, categories, productId, items, temperature } = product;
+        const {
+          images,
+          description,
+          categories,
+          productId,
+          items,
+          temperature,
+        } = product;
         if (!images[0].sizes[3].url) continue;
         let pImage;
         for (let img of images) {
           const { perspective, sizes } = img;
           if (perspective === "front") pImage = sizes[3].url;
         }
-        let refrigerate=''
-        if(temperature.indicator === 'Refrigerated') refrigerate ='Refrigerate'
+        let refrigerate = "";
+        if (temperature.indicator === "Refrigerated")
+          refrigerate = "Refrigerate";
         $(".productResults").append(`
-        <div class="product" data-url="/api/products/${productId}" data-id="${productId}" data-fav="false">
+        <div class="product" 
+          data-actual_prod_id='${productId}' 
+          data-name='${description}' 
+          data-categories='${categories.join(", ")}' 
+          data-image='${pImage}' 
+          data-price='${items[0].price.regular}'
+          data-unit='${items[0].soldBy}'
+          data-size='${items[0].size}'
+          data-refrigerate='${refrigerate}'
+          data-fav="false">
+            <i class="fa-regular fa-star" data-fav='true'></i>
             <img class="image" src="${pImage}" alt="">
             <h3 class="categories">${categories.join(", ")}</h3>
             <h2 class="description">${description}</h2>
             <p class="price">Price: ${items[0].price.regular} per ${
-              items[0].soldBy
-            }</p>
+          items[0].soldBy
+        }</p>
             <p class='info'> Weight: ${items[0].size} <br>${refrigerate}</p>
           </div>
         `);
@@ -61,5 +87,34 @@ shopingList.addEventListener("click", async (e) => {
     console.log(url, data);
   } else if (trash) {
     e.target.parentElement.remove();
+  }
+});
+$(`.productResults`).on("click", async (e) => {
+  if (e.target.classList.contains("fa-star")) {
+    const product = e.target.parentElement;
+    let { fav } = product.dataset;
+
+    product.dataset.fav = fav !== "true" ? "true" : "false";
+
+    if (product.dataset.fav === "true") {
+      const { fav_id, ...favProd } = product.dataset;
+
+      const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(favProd),
+      };
+
+      const res = await sendReq("/api/products", options);
+      product.dataset.fav_id = res.id;
+    } else {
+      const options = {
+        method: "DELETE",
+      };
+      const { fav_id } = product.dataset;
+
+      const data = await sendReq(`/api/products/${fav_id}`, options);
+      console.log(data);
+    }
   }
 });

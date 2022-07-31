@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css">
     <script
       src="https://kit.fontawesome.com/25b6137a6f.js"
       crossorigin="anonymous"
@@ -26,6 +27,16 @@
         </div>
       </div>
       <div class="productResults">
+        <div class="product" data-url="/api/products/${productId}" data-id="${productId}" data-fav="false">
+          <i class="fa-regular fa-star" data-fav='true'></i>
+          <img class="image" src="${pImage}" alt="">
+          <h3 class="categories">${categories.join(", ")}</h3>
+          <h2 class="description">${description}</h2>
+          <p class="price">Price: ${items[0].price.regular} per ${
+            items[0].soldBy
+          }</p>
+          <p class='info'> Weight: ${items[0].size} <br>${refrigerate}</p>
+        </div>
       </div>
     </main>
   </body>
