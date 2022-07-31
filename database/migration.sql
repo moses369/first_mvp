@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS fav_products,users,orders;
+DROP TABLE IF EXISTS fav_products,users,orders,products;
 
 
 
@@ -12,10 +12,8 @@ CREATE TABLE users (
 INSERT INTO users 
    (name, email,phone, address) VALUES
    ('Moses', 'moses@email.com', null,'8th st. WhereYouAt' );
-
-CREATE TABLE fav_products (
-   id SERIAL,
-   actual_prod_id bigint NOT NULL,
+CREATE TABLE products (
+   product_id bigint NOT NULL PRIMARY KEY,
    name TEXT NOT NULL,
    categories TEXT NOT NULL,
    image TEXT NOT NULL,
@@ -23,7 +21,12 @@ CREATE TABLE fav_products (
    unit varchar(5) NOT NULL,
    size TEXT NOT NULL,
    refrigerate TEXT NOT NULL,
-   fav TEXT NOT NULL,
+   fav_count INTEGER NOT NULL,
+   order_count INTEGER NOT NULL
+);
+CREATE TABLE fav_products (
+   id SERIAL,
+   product_id INTEGER REFERENCES products(product_id),
    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
 

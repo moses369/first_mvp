@@ -18,12 +18,20 @@ products
     }
   })
   .post(async (req, res, next) => {
-    try {
-      const product = { ...req.body, user_id: 1 };
-      const newProd = (
-        await sql` INSERT INTO fav_products ${sql(product)} RETURNING *`
-      )[0];
-      res.status(201).json(newProd);
+    try {     
+      const { user_id,  ...product } = req.body;
+      const { product_id } = product;
+      const fav = { user_id, product_id };
+
+      if (
+        !(
+          await sql`SELECT * FROM products WHERE product_id = ${product_id}`
+        )[0]
+      ) {
+         await sql` INSERT INTO products ${sql(product)}`;
+      }
+      const favProd = await sql`INSERT INTO fav_products ${sql(fav)} RETURNING *`;
+      res.status(201).json(favProd);
     } catch (error) {
       next(error);
     }
@@ -40,9 +48,9 @@ products.route("/:id").delete(async (req, res, next) => {
       if (item) {
         const deleted =
           await sql`DELETE FROM fav_products WHERE id = ${id} RETURNING *`;
-        if (NODE_ENV !== "production") console.log(deleted);
+        if (NODE_ENV !== "production") console.log('DELETED ',deleted);
 
-        res.status(204).send('Item Unfavorited');
+        res.status(204).send("Item Unfavorited");
       } else {
         next();
       }

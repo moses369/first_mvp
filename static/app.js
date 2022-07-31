@@ -19,7 +19,7 @@ async function sendReq(url, options) {
     console.error(err);
   }
 }
-
+// ADD ITEMS TO SHOPPING LIST
 $(".addToList").on("submit", async (e) => {
   e.preventDefault();
   const newItem = $(`.addToList input[name='product']`).val();
@@ -35,6 +35,7 @@ $(".addToList").on("submit", async (e) => {
   $(`.addToList input[name='product']`).val("");
 });
 
+// RETRIEVE ITEMS FROM SHOPPING LIST SELECTION
 $(".shoppingList .itemList").on("click", async (e) => {
   const trash = e.target.dataset.trash;
   const url = e.target.dataset.url;
@@ -63,7 +64,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
           refrigerate = "Refrigerate";
         $(".productResults").append(`
         <div class="product" 
-          data-actual_prod_id='${productId}' 
+          data-product_id='${productId}' 
           data-name='${description}' 
           data-categories='${categories.join(", ")}' 
           data-image='${pImage}' 
@@ -79,7 +80,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
             <p class="price">Price: ${items[0].price.regular} per ${
           items[0].soldBy
         }</p>
-            <p class='info'> Weight: ${items[0].size} <br>${refrigerate}</p>
+            <p class='info'> Size: ${items[0].size} <br>${refrigerate}</p>
           </div>
         `);
       }
@@ -89,6 +90,8 @@ $(".shoppingList .itemList").on("click", async (e) => {
     e.target.parentElement.remove();
   }
 });
+
+// SET FAVORITES
 $(`.productResults`).on("click", async (e) => {
   if (e.target.classList.contains("fa-star")) {
     const product = e.target.parentElement;
@@ -97,24 +100,29 @@ $(`.productResults`).on("click", async (e) => {
     product.dataset.fav = fav !== "true" ? "true" : "false";
 
     if (product.dataset.fav === "true") {
-      const { fav_id, ...favProd } = product.dataset;
-
+      const { fav, fav_id, ...favProd } = product.dataset;
+      favProd.fav_count = 1;
+      favProd.order_count = 0;
+      favProd.user_id = 1;
+      
+      
       const options = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(favProd),
       };
 
-      const res = await sendReq("/api/products", options);
+      const res = (await sendReq("/api/products", options))[0];
       product.dataset.fav_id = res.id;
     } else {
       const options = {
         method: "DELETE",
       };
       const { fav_id } = product.dataset;
-
       const data = await sendReq(`/api/products/${fav_id}`, options);
       console.log(data);
     }
   }
 });
+
+// ADD TO CART
