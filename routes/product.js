@@ -48,8 +48,7 @@ products.route("/:id").delete(async (req, res, next) => {
       if (item) {
         const deleted =
           await sql`DELETE FROM fav_products WHERE id = ${id} RETURNING *`;
-        if (NODE_ENV !== "production") console.log('DELETED ',deleted);
-
+        if (NODE_ENV !== "production") console.log('DELETED ',deleted[0]);
         res.status(204).send("Item Unfavorited");
       } else {
         next();

@@ -15,33 +15,58 @@
   </head>
   <body>
     <main class="container">
+
       <div class="shoppingList">
+        <h2>Shopping List</h2>
         <form action="" class="addToList">
           <input type="text" autocomplete="off" name="product">
           <input type="submit">
         </form>
         <div class="itemList">
-          <div class="item"> <a href="#" data-url='/api/products?filter.term=${newItem}' class='itemLink'>${newItem}</a>
-            <i class="fa-solid fa-trash" data-trash='true'></i>
-          </div>  
+     
         </div>
       </div>
+
       <div class="productResults">
+        <h2>Results</h2>
         <div class="product" data-url="/api/products/${productId}" data-id="${productId}" data-fav="false">
           <i class="fa-regular fa-star" data-fav='true'></i>
           <img class="image" src="${pImage}" alt="">
-          <h3 class="categories">${categories.join(", ")}</h3>
-          <h2 class="description">${description}</h2>
+          <h4 class="categories">${categories.join(", ")}</h4>
+          <h3 class="description">${description}</h3>
           <p class="price">Price: ${items[0].price.regular} per ${
             items[0].soldBy
           }</p>
           <p class='info'> Weight: ${items[0].size} <br>${refrigerate}</p>
-          <form action="#" >
+          <form action="" class="addToCart" >
             <label for="qty">Qty</label>
             <input type="number" name="qty" id="qty" min="1" value="1">
-            <input type="submit" class="btn addToCart" value="ADD TO CART">
+            <input type="submit" class="btn" value="ADD TO CART">
           </form>
         </div>
+      </div>
+
+      <div class="cart">
+        <h2>Cart</h2>
+        <div class="product inCart" 
+        data-product_id='${productId}' 
+        data-name='${description}' 
+        data-categories='${categories.join(", ")}' 
+        data-image='${pImage}' 
+        data-price='${items[0].price.regular}'
+        data-unit='${items[0].soldBy}'
+        data-size='${items[0].size}'
+        data-refrigerate='${refrigerate}'
+        data-fav="false">
+          <i class="fa-regular fa-star"></i>
+          <img class="image" src="${pImage}" alt="">
+          <h2 class="description">${description}</h2>
+          <p class='info'> Size: ${items[0].size} <br> ${refrigerate} </p>
+          <p class="price">Price: $${items[0].price.regular * qty} </p>
+          <input class="cartyQty" type="number" name="qty" id="qty" min="1" value="${qty}">
+          <button class="btn rm FromCart">X</button>
+        </div>
+
       </div>
     </main>
   </body>

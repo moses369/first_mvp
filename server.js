@@ -14,7 +14,7 @@ app.set("proxy server", 1);
 app.use(express.static("static"));
 app.use(express.json());
 app.use((req, res, next) => {
-  if (NODE_ENV !== "production") console.log('METHOD:',req.method,'\nURL:',req.url);
+  if (NODE_ENV !== "production") console.log({METHOD:req.method,URL:req.url});
 
   next();
 });
