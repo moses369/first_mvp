@@ -8,7 +8,7 @@ async function sendReq(url, options) {
       } else {
         data = await res.text();
       }
-      console.log("RES STATUS", res.status);
+      console.log("RES STATUS", res.status, 'line 11');
 
       return data;
     } else {
@@ -24,8 +24,8 @@ const $cartCount = $(".cartCount");
 /*************** END APP WIDE VARS ***************/
 /***************CART NOTIFACTION ***************/
 const cartNotif = () =>
-  $cartCount.text() !== '0' ? $cartCount.show() : $cartCount.hide();
-cartNotif()
+  $cartCount.text() !== "0" ? $cartCount.show() : $cartCount.hide();
+cartNotif();
 /*************** END END CART NOTIFICATION ***************/
 /*************** ADD ITEMS TO SHOPPING LIST ***************/
 $(".addToList").on("submit", async (e) => {
@@ -76,23 +76,20 @@ $(".shoppingList .itemList").on("click", async (e) => {
           inCart = "ADDED";
         $(".productResults").append(`
         <div class="product" 
-          data-product_id='${productId}' 
-          data-name='${description}' 
-          data-categories='${categories.join(", ")}' 
-          data-image='${pImage}' 
-          data-price='${items[0].price.regular}'
-          data-unit='${items[0].soldBy}'
-          data-size='${items[0].size}'
-          data-refrigerate='${refrigerate}'
-          data-fav="false"
+          data-product_id=${productId} 
+          data-name=${description} 
+          data-categories=${categories.join(", ")} 
+          data-image=${pImage} 
+          data-price=${items[0].price.regular}
+          data-size=${items[0].size}
+          data-refrigerate=${refrigerate}
+          data-fav='false'
           data-item = ${item}>
             <i class="fa-regular fa-star"></i>
             <img class="image" src="${pImage}" alt="">
             <h4 class="categories">${categories.join(", ")}</h4>
             <h3 class="description">${description}</h3>
-            <p class="price">Price: $${items[0].price.regular} per ${
-          items[0].soldBy
-        }</p>
+            <p class="price">Price: $${items[0].price.regular} </p>
             <p class='info'> Size: ${items[0].size} <br>${refrigerate}</p>
             <form action="" class="addToCart" >
               <label for="qty">Qty</label>
@@ -109,16 +106,16 @@ $(".shoppingList .itemList").on("click", async (e) => {
   } else if (trash) {
     const item = e.target.parentElement.innerText;
 
-    let cartCount = parseInt($cartCount.text())
-    $(`.cart .product[data-item=${item}] `).each((i,product) => cartCount--)
+    let cartCount = parseInt($cartCount.text());
+    $(`.cart .product[data-item=${item}] `).each((i, product) => cartCount--);
 
     $(
       `.productResults .product[data-item=${item}] .addToCart input[type='submit']`
-      ).val("ADD TO CART");
-      $(`.cart .product[data-item=${item}] `).remove();
-      $cartCount.text(cartCount)
-      cartNotif()
-      e.target.parentElement.remove();
+    ).val("ADD TO CART");
+    $(`.cart .product[data-item=${item}] `).remove();
+    $cartCount.text(cartCount);
+    cartNotif();
+    e.target.parentElement.remove();
   }
   // END RM ITEM FROM SHOPPING LIST
 });
@@ -130,18 +127,22 @@ const setFav = async (e) => {
     const product = e.target.parentElement;
     let { fav } = product.dataset;
 
+
     product.dataset.fav = fav !== "true" ? "true" : "false";
 
     if (product.dataset.fav === "true") {
-      const { item, fav, fav_id, ...favProd } = product.dataset;
-      favProd.fav_count = 1;
-      favProd.order_count = 0;
-      favProd.user_id = 1;
-
+      const { fav, fav_id, ...favProd } = product.dataset;
+      const addKeys = {
+        fav_count: 1,
+        order_count: 0,
+        user_id: 1,
+        useFor: "fav_products",
+      };
+      const sentObj = { ...favProd, ...addKeys };
       const options = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(favProd),
+        body: JSON.stringify(sentObj),
       };
 
       const res = (await sendReq("/api/products", options))[0];
@@ -149,78 +150,98 @@ const setFav = async (e) => {
     } else {
       const options = {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usedFor: "fav_products" }),
       };
       const { fav_id } = product.dataset;
       const data = await sendReq(`/api/products/${fav_id}`, options);
-      console.log(data);
     }
   }
 };
 /*************** END SET FAVORITE ***************/
+/*************** ADD TO CART ***************/
+async function addItem(e) {
+  e.preventDefault();
+  const product = e.target.parentElement;
+  const {
+    product_id,
+    name,
+    categories,
+    image,
+    price,
+    unit,
+    size,
+    refrigerate,
+    fav,
+    item,
+  } = product.dataset;
 
+  const qty = $(
+    `.product[data-product_id = '${product_id}'] .addToCart input[name='qty'] `
+  ).val();
+
+  if (!$(`.cart`).find(`.product[data-product_id='${product_id}'`).length) {
+    const { fav, fav_id, ...cartItem } = product.dataset;
+    const addKeys = {
+      fav_count: 0,
+      order_count: 0,
+      user_id: 1,
+      useFor: "cart",
+      qty,
+    };
+    const sentItem = { ...cartItem, ...addKeys };
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(sentItem),
+    };
+    const res = await sendReq("api/products", options);
+    const order_id = res[0].id
+    console.log(res, 'line 198 add to cart');
+
+    $(".cart").append(`
+        <div class="product inCart" 
+        data-product_id=${product_id} 
+        data-name=${name} 
+        data-categories=${categories} 
+        data-image=${image} 
+        data-price=${price}
+        data-size=${size}
+        data-refrigerate=${refrigerate}
+        data-order_id=${order_id}
+        data-fav=${fav}
+        data-order_count = ${qty}
+        data-item = ${item}>
+          <i class="fa-regular fa-star"></i>
+          <img class="image" src="${image}" alt="">
+          <h2 class="description">${name}</h2>
+          <p class='info'> Size: ${size} <br> ${refrigerate} </p>
+          <p class="price">$${price * qty} </p>  
+          <form action="" class='cartQty'>
+            <input class="cartQty" type="number" name="qty" id="qty" min="1" value="${qty}">
+            <input class="btn cartQty" type="submit" value="Update Qty">
+          </form>
+          <button class="btn rm FromCart">X</button>
+      
+        </div>
+    `);
+    $(
+      `.product[data-product_id = '${product_id}'] .addToCart input[type='submit']`
+    ).val("ADDED");
+    $(`.itemList .itemLink[data-item='${item}']`).css({
+      "text-decoration": "line-through",
+    });
+    let cartCount = parseInt($cartCount.text());
+    cartCount++;
+    $cartCount.text(cartCount);
+    cartNotif();
+  }
+}
 $(`.productResults`).on("click", async (e) => {
   await setFav(e);
-  /*************** ADD TO CART ***************/
   if (e.target.classList.contains("addToCart")) {
-    $(`.addToCart`).on("submit", async (e) => {
-      e.preventDefault();
-      const product = e.target.parentElement;
-      const {
-        product_id,
-        name,
-        categories,
-        image,
-        price,
-        unit,
-        size,
-        refrigerate,
-        fav,
-        item,
-      } = product.dataset;
-
-      const qty = $(
-        `.product[data-product_id = '${product_id}'] .addToCart input[name='qty'] `
-      ).val();
-
-      if (!$(`.cart`).find(`.product[data-product_id='${product_id}'`).length) {
-        $(".cart").append(`
-          <div class="product inCart" 
-          data-product_id='${product_id}' 
-          data-name='${name}' 
-          data-categories='${categories}' 
-          data-image='${image}' 
-          data-price='${price}'
-          data-unit='${unit}'
-          data-size='${size}'
-          data-refrigerate='${refrigerate}'
-          data-fav="${fav}"
-          data-order_count = ${qty}
-          data-item = ${item}>
-            <i class="fa-regular fa-star"></i>
-            <img class="image" src="${image}" alt="">
-            <h2 class="description">${name}</h2>
-            <p class='info'> Size: ${size} <br> ${refrigerate} </p>
-            <p class="price">$${price * qty} </p>  
-            <form action="" class='cartQty'>
-              <input class="cartQty" type="number" name="qty" id="qty" min="1" value="${qty}">
-              <input class="btn cartQty" type="submit" value="Update Qty">
-            </form>
-            <button class="btn rm FromCart">X</button>
-        
-          </div>
-      `);
-        $(
-          `.product[data-product_id = '${product_id}'] .addToCart input[type='submit']`
-        ).val("ADDED");
-        $(`.itemList .itemLink[data-item='${item}']`).css({
-          "text-decoration": "line-through",
-        });
-        let cartCount = parseInt($cartCount.text())
-        cartCount++
-        $cartCount.text(cartCount)
-        cartNotif()
-      }
-    });
+    $(`.addToCart`).unbind('submit').bind("submit",async e => await addItem(e));
+   
   }
   /*************** END ADD TO CART ***************/
 });
@@ -249,7 +270,7 @@ $(`.cart`).on("click", async (e) => {
   // END UPDATE QTY
   // RM FROM CART
   if (e.target.classList.contains("rm", "FromCart")) {
-    const { product_id, item } = e.target.parentElement.dataset;
+    const { product_id, item, order_id } = e.target.parentElement.dataset;
     e.target.parentElement.remove();
     $(
       `.productResults .product[data-product_id = '${product_id}'] .addToCart input[type='submit']`
@@ -257,10 +278,18 @@ $(`.cart`).on("click", async (e) => {
     $(`.itemList .itemLink[data-item='${item}']`).css({
       "text-decoration": "none",
     });
-    let cartCount = parseInt($cartCount.text())
-    cartCount--
-    $cartCount.text(cartCount)
-    cartNotif()
+    let cartCount = parseInt($cartCount.text());
+    cartCount--;
+    $cartCount.text(cartCount);
+    cartNotif();
+
+    const options = {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usedFor: "cart" }),
+    };
+
+    const data = await sendReq(`/api/products/${order_id}`, options);
   }
   // END RM FROM CART
 });

@@ -18,20 +18,27 @@ products
     }
   })
   .post(async (req, res, next) => {
-    try {     
-      const { user_id,  ...product } = req.body;
+    try {
+      const { qty, useFor, user_id, ...product } = req.body;
       const { product_id } = product;
-      const fav = { user_id, product_id };
 
       if (
-        !(
-          await sql`SELECT * FROM products WHERE product_id = ${product_id}`
-        )[0]
+        !(await sql`SELECT * FROM products WHERE product_id = ${product_id}`)[0]
       ) {
-         await sql` INSERT INTO products ${sql(product)}`;
+        await sql` INSERT INTO products ${sql(product)}`;
       }
-      const favProd = await sql`INSERT INTO fav_products ${sql(fav)} RETURNING *`;
-      res.status(201).json(favProd);
+
+      let item;
+      if (useFor === "fav_products") item = { user_id, product_id };
+      if (useFor === "cart") item = { user_id, product_id, qty };
+      if (
+        !(await sql`SELECT * FROM ${sql(useFor)} WHERE product_id = ${product_id}`)[0]
+      ) {
+        const added = await sql`INSERT INTO ${sql(useFor)} ${sql(item)} RETURNING *`;
+        res.status(201).json(added);
+      }else{
+        res.status(200).json({item:'Already Exist'})
+      }
     } catch (error) {
       next(error);
     }
@@ -40,16 +47,17 @@ products
 products.route("/:id").delete(async (req, res, next) => {
   try {
     const { id } = req.params;
+    const { usedFor } = req.body;
     const ID = parseInt(id);
     if (isNaN(ID)) {
       next();
     } else {
-      const item = await sql`SELECT * FROM fav_products WHERE id = ${id}`;
+      const item = await sql`SELECT * FROM ${sql(usedFor)} WHERE id = ${id}`;
       if (item) {
         const deleted =
-          await sql`DELETE FROM fav_products WHERE id = ${id} RETURNING *`;
-        if (NODE_ENV !== "production") console.log('DELETED ',deleted[0]);
-        res.status(204).send("Item Unfavorited");
+          await sql`DELETE FROM ${sql(usedFor)} WHERE id = ${id} RETURNING *`;
+        if (NODE_ENV !== "production") console.log("DELETED ", deleted[0], 'From:',usedFor);
+        res.status(204).send("Item Deleted");
       } else {
         next();
       }

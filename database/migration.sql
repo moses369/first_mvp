@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS fav_products,users,orders,products;
+DROP TABLE IF EXISTS fav_products,users,orders,products,cart;
 
 
 
@@ -18,17 +18,24 @@ CREATE TABLE products (
    categories TEXT NOT NULL,
    image TEXT NOT NULL,
    price MONEY NOT NULL,
-   unit varchar(5) NOT NULL,
    size TEXT NOT NULL,
    refrigerate TEXT NOT NULL,
+   item TEXT NOT NULL,
    fav_count INTEGER NOT NULL,
    order_count INTEGER NOT NULL
 );
 CREATE TABLE fav_products (
    id SERIAL,
-   product_id INTEGER REFERENCES products(product_id),
+   product_id BIGINT REFERENCES products(product_id),
    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
+CREATE TABLE cart (
+   id SERIAL,
+   product_id BIGINT REFERENCES products(product_id),
+   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+   qty INTEGER NOT NULL
+);
+
 
 
 
