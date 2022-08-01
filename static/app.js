@@ -19,6 +19,14 @@ async function sendReq(url, options) {
     console.error(err);
   }
 }
+/*************** APP WIDE VARS ***************/
+const $cartCount = $(".cartCount");
+/*************** END APP WIDE VARS ***************/
+/***************CART NOTIFACTION ***************/
+const cartNotif = () =>
+  $cartCount.text() !== '0' ? $cartCount.show() : $cartCount.hide();
+cartNotif()
+/*************** END END CART NOTIFICATION ***************/
 /*************** ADD ITEMS TO SHOPPING LIST ***************/
 $(".addToList").on("submit", async (e) => {
   e.preventDefault();
@@ -100,15 +108,21 @@ $(".shoppingList .itemList").on("click", async (e) => {
     // RM ITEM FROM SHOPPING LIST
   } else if (trash) {
     const item = e.target.parentElement.innerText;
+
+    let cartCount = parseInt($cartCount.text())
+    $(`.cart .product[data-item=${item}] `).each((i,product) => cartCount--)
+
     $(
       `.productResults .product[data-item=${item}] .addToCart input[type='submit']`
-    ).val("ADD TO CART");
-    $(`.cart .product[data-item=${item}] `).remove();
-    e.target.parentElement.remove();
+      ).val("ADD TO CART");
+      $(`.cart .product[data-item=${item}] `).remove();
+      $cartCount.text(cartCount)
+      cartNotif()
+      e.target.parentElement.remove();
   }
   // END RM ITEM FROM SHOPPING LIST
 });
-/*************** SHOPPLING LIST ITEM INTERACTION ***************/
+/*************** END SHOPPLING LIST ITEM INTERACTION ***************/
 
 /*************** SET FAVORITE ***************/
 const setFav = async (e) => {
@@ -201,6 +215,10 @@ $(`.productResults`).on("click", async (e) => {
         $(`.itemList .itemLink[data-item='${item}']`).css({
           "text-decoration": "line-through",
         });
+        let cartCount = parseInt($cartCount.text())
+        cartCount++
+        $cartCount.text(cartCount)
+        cartNotif()
       }
     });
   }
@@ -239,6 +257,10 @@ $(`.cart`).on("click", async (e) => {
     $(`.itemList .itemLink[data-item='${item}']`).css({
       "text-decoration": "none",
     });
+    let cartCount = parseInt($cartCount.text())
+    cartCount--
+    $cartCount.text(cartCount)
+    cartNotif()
   }
   // END RM FROM CART
 });

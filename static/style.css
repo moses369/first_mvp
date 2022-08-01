@@ -12,3 +12,8 @@
 a{
    text-decoration: none;
 }
+
+.cartBtn{
+   height: 3rem;
+   width: fit-content;
+}
