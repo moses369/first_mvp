@@ -4,72 +4,51 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script
       src="https://kit.fontawesome.com/25b6137a6f.js"
       crossorigin="anonymous"
     ></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
     <script defer src="./app.js"></script>
     <title>Shopping List</title>
   </head>
   <body>
+    <nav>
+      <button class="btn cartBtn">
+        <span class="cartCount">0</span>
+        <i class="fa-solid fa-cart-shopping"></i>
+      </button>
+
+      <button class="btn favBtn"><i class="fa-solid fa-bag-shopping "></i></button>
+    </nav>
+
     <main class="container">
 
       <div class="shoppingList">
         <h2>Shopping List</h2>
         <form action="" class="addToList">
-          <input type="text" autocomplete="off" name="product">
-          <input type="submit">
+          <input type="text" autocomplete="off" name="product" />
+          <input type="submit" />
         </form>
-        <div class="itemList">
-     
-        </div>
+        <div class="itemList"></div>
       </div>
 
       <div class="productResults">
         <h2>Results</h2>
-        <div class="product" data-url="/api/products/${productId}" data-id="${productId}" data-fav="false">
-          <i class="fa-regular fa-star" data-fav='true'></i>
-          <img class="image" src="${pImage}" alt="">
-          <h4 class="categories">${categories.join(", ")}</h4>
-          <h3 class="description">${description}</h3>
-          <p class="price">Price: ${items[0].price.regular} per ${
-            items[0].soldBy
-          }</p>
-          <p class='info'> Weight: ${items[0].size} <br>${refrigerate}</p>
-          <form action="" class="addToCart" >
-            <label for="qty">Qty</label>
-            <input type="number" name="qty" id="qty" min="1" value="1">
-            <input type="submit" class="btn" value="ADD TO CART">
-          </form>
-        </div>
       </div>
-      <button class="btn cartBtn">
-        <span class="cartCount" >0</span>
-        <i class="fa-solid fa-cart-shopping"></i>
-      </button>
+      
       <div class="cart">
         <h2>Cart</h2>
-        <div class="product inCart" 
-        data-product_id='${productId}' 
-        data-name='${description}' 
-        data-categories='${categories.join(", ")}' 
-        data-image='${pImage}' 
-        data-price='${items[0].price.regular}'
-        data-unit='${items[0].soldBy}'
-        data-size='${items[0].size}'
-        data-refrigerate='${refrigerate}'
-        data-fav="false">
-          <i class="fa-regular fa-star"></i>
-          <img class="image" src="${pImage}" alt="">
-          <h2 class="description">${description}</h2>
-          <p class='info'> Size: ${items[0].size} <br> ${refrigerate} </p>
-          <p class="price">Price: $${items[0].price.regular * qty} </p>
-          <input class="cartyQty" type="number" name="qty" id="qty" min="1" value="${qty}">
-          <button class="btn rm FromCart">X</button>
-        </div>
+      </div>
 
+      <div class="favorites">
+        <h2>Favorites</h2>
+      </div>
       </div>
     </main>
   </body>
