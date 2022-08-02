@@ -22,7 +22,6 @@ products
     try {
       const { fav_count, ordered, qty, useFor, user_id, ...product } = req.body;
       const { product_id } = product;
-
       if (
         !(await sql`SELECT * FROM products WHERE product_id = ${product_id}`)[0]
       ) {
@@ -30,8 +29,15 @@ products
       }
       let item;
       if (useFor === "fav_products") item = { user_id, product_id };
-      if (useFor === "cart")
-        item = { user_id, product_id, qty, item:product.item , date: Date.now() };
+      if (useFor === "cart") {
+        item = {
+          user_id,
+          product_id,
+          qty,
+          item: product.item,
+          date: Date.now(),
+        };
+      }
       if (
         !(
           await sql`SELECT * FROM ${sql(
@@ -177,36 +183,39 @@ products.route("/cart/count").get(async (req, res, next) => {
     next(error);
   }
 });
-products.route("/cart/item").get(async (req, res, next) => {
-  try {
-    const { user_id } = req.headers;
-    const items = await sql`
+products
+  .route("/cart/item")
+  .get(async (req, res, next) => {
+    try {
+      const { user_id } = req.headers;
+      const items = await sql`
        SELECT products.item 
         FROM products 
         LEFT JOIN cart 
           ON cart.product_id = products.product_id 
         WHERE user_id=${user_id}
       `;
-    if (dev()) console.log({ retrieved: items });
+      if (dev()) console.log({ retrieved: items });
 
-    res.status(200).json(items);
-  } catch (error) {
-    next(error);
-  }
-}).delete(async (req,res,next) => {
-  try {
-    const {item, user_id} = req.body
-    const parsedItem = item.split(' ')[0]
-    console.log({parsedItem});
-    
-    const deleted = await sql`DELETE FROM cart WHERE item=${parsedItem} AND user_id=${user_id} RETURNING *`
-    if(dev())console.log({deleted, from:'cart'});
-    res.status(200).json(deleted)
-    
-  } catch (error) {
-    next(error)
-  }
-});
+      res.status(200).json(items);
+    } catch (error) {
+      next(error);
+    }
+  })
+  .delete(async (req, res, next) => {
+    try {
+      const { item, user_id } = req.body;
+      let parsedItem = item.split(" ");
+      const newItem = parsedItem.slice(0, parsedItem.length - 1).join(" ");
+
+      const deleted =
+        await sql`DELETE FROM cart WHERE item=${newItem} AND user_id=${user_id} RETURNING *`;
+      if (dev()) console.log({ deleted, from: "cart" });
+      res.status(200).json(deleted);
+    } catch (error) {
+      next(error);
+    }
+  });
 /*************** END ROUTE TO ITEMS IN CART ***************/
 /***************  ROUTE TO LISTS ***************/
 products
@@ -263,7 +272,9 @@ products
           oldItems = oldItems.items.split(",");
           oldItems.splice(oldItems.indexOf(items.split(" ,")[0]), 1);
           const newItems = oldItems.join(",");
-          updated = (await sql`UPDATE lists SET items= ${newItems} WHERE user_id=${user_id} RETURNING *` )[0]
+          updated = (
+            await sql`UPDATE lists SET items= ${newItems} WHERE user_id=${user_id} RETURNING *`
+          )[0];
           break;
       }
       if (dev()) console.log({ table: "list", updated });
