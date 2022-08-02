@@ -26,7 +26,7 @@ const token = (async () => {
   }
 })();
 
-const sendReq = async (req, next, id = "") => {
+const sendNodeReq = async (req, next, id = "") => {
   try {
     const params = new URLSearchParams({
       ...url.parse(req.url, true).query,
@@ -57,4 +57,4 @@ const sendReq = async (req, next, id = "") => {
     next(error);
   }
 };
-export default sendReq;
+export default sendNodeReq;

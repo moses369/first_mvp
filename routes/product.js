@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import sql from "../database/db.js";
-import sendReq from "../nodeFetch.js";
+import sendNodeReq from "../nodeFetch.js";
 
 dotenv.config();
 const { NODE_ENV } = process.env;
@@ -13,7 +13,7 @@ products
   .route("/")
   .get(async (req, res, next) => {
     try {
-      const data = await sendReq(req, next);
+      const data = await sendNodeReq(req, next);
       res.json(data);
     } catch (err) {
       next(err);
