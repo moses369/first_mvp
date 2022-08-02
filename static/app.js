@@ -44,28 +44,23 @@ async function cartNotif() {
 }
 //// END END CART NOTIFICATION
 ////  CHECK CART
-async function checkCart(productId, useCase) {
+async function checkCart(productId, useCase, mapOfIds) {
   switch (useCase) {
     case "btn":
-      const res = (
-        await sendReq(`/api/products/table/${productId}`, {
-          headers: { user_id: 1, usedFor: "cart" },
-        })
-      )[0];
-
       let inCart = "ADD TO CART";
       if (
         $(`.cart`).find(`.product[data-product_id='${productId}'`).length ||
-        res
+        mapOfIds.has(productId)
       )
         inCart = "ADDED";
       return inCart;
     case "onload":
-      const { count } = (
-        await sendReq("/api/products/cart/count", { headers: { user_id: 1 } })
-      )[0];
+      const count = await sendReq("/api/products/cart/count", {
+        headers: { user_id: 1 },
+      });
       $(".cartCount").text(count);
       cartNotif();
+
       return count;
     case "list":
       if ($(".cartCount").is(":visible")) {
@@ -77,15 +72,23 @@ async function checkCart(productId, useCase) {
   }
 }
 //// END CHECK CART
+////  GET ITEMS FROM A TABLE MATCHIG ID
+async function getItems(usedFor) {
+  const res = await sendReq("/api/products/table", {
+    headers: { user_id: 1, usedFor },
+  });
+  const ids = new Map();
+  for (let item of res) {
+    const { product_id, id } = item;
+    ids.set(product_id, id);
+  }
+  return ids;
+}
+////  END GET ITEMS FROM A TABLE MATCHIG ID
 ////  CHECK FAV
-async function checkFav(productId, useCase) {
-  const res = (
-    await sendReq(`/api/products/table/${productId}`, {
-      headers: { user_id: 1, usedFor: "fav_products" },
-    })
-  )[0];
-  const fav = res ? true : false;
-  const fav_id = fav ? res.id : 0;
+function checkFav(productId, mapOfIds) {
+  const fav = mapOfIds.has(productId);
+  const fav_id = fav ? mapOfIds.get(productId) : 0;
   const favObj = { fav, fav_id };
   return favObj;
 }
@@ -216,6 +219,8 @@ $(".shoppingList .itemList").on("click", async (e) => {
   if (url) {
     const item = url.substring(url.indexOf("=") + 1);
     const { data } = await sendReq(url);
+    const favMap = await getItems("fav_products");
+    const cartMap = await getItems("cart");
     $(".productResults").empty();
     if (data) {
       for (let product of data) {
@@ -232,9 +237,9 @@ $(".shoppingList .itemList").on("click", async (e) => {
         if (temperature.indicator === "Refrigerated")
           refrigerate = "Keep Refrigerated";
 
-        const inCart = await checkCart(productId, "btn");
-
-        const { fav_id, fav } = await checkFav(productId);
+        const inCart = await checkCart(productId, "btn", cartMap);
+        const { fav_id, fav } = checkFav(productId, favMap);
+        // const { fav_id, fav } = checkFav(productId);
         $(".productResults").append(`
         <div class="product" 
           data-product_id=${productId} 
@@ -587,3 +592,4 @@ $(".cartBtn").on("click", async (e) => {
   }
 });
 /*************** END GET CART ***************/
+// TO DO ADD CHECKOUT BUTN FOR CART, ADD TOTAL PRICE ON CART TABLE AND ITEM DATASETS, ADD TOTAL PRICE INDICATOR OF CART WITH DATASET OF CART PRICE AND THEN STYLING

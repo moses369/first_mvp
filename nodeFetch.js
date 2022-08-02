@@ -6,6 +6,7 @@ dotenv.config();
 
 const { API_CLIENT_USER, API_CLIENT_SECRET, API_BASE_URL, NODE_ENV } =
   process.env;
+  const devLog = (obj) => NODE_ENV !== "production" ? console.log(obj):null;
 
 const token = (async () => {
   try {
@@ -43,9 +44,7 @@ const sendReq = async (req, next, id = "") => {
     );
     if (apiRes.status >= 200 && apiRes.status < 300) {
       const data = await apiRes.json();
-      if (NODE_ENV !== "production") {
-        console.log('RequestURL',req.url)
-      }
+      devLog({APIquery:req.url})
       return data;
     } else {
       const body = await apiRes.json();
