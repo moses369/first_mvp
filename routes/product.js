@@ -5,7 +5,7 @@ import sendReq from "../nodeFetch.js";
 
 dotenv.config();
 const { NODE_ENV } = process.env;
-const devLog = (obj) => NODE_ENV !== "production" ? console.log(obj):null;
+const devLog = (obj) => (NODE_ENV !== "production" ? console.log(obj) : null);
 
 const products = express.Router();
 /***************  ROUTES TO BASE URL ***************/
@@ -18,47 +18,8 @@ products
     } catch (err) {
       next(err);
     }
-  })
-  .post(async (req, res, next) => {
-    try {
-      const { fav_count, ordered, qty, useFor, user_id, ...product } = req.body;
-      const { product_id } = product;
-      if (
-        !(await sql`SELECT * FROM products WHERE product_id = ${product_id}`)[0]
-      ) {
-        await sql` INSERT INTO products ${sql(product)}`;
-      }
-      let item;
-      if (useFor === "fav_products") item = { user_id, product_id };
-      if (useFor === "cart") {
-        item = {
-          user_id,
-          product_id,
-          qty,
-          item: product.item,
-          date: Date.now(),
-        };
-      }
-      if (
-        !(
-          await sql`SELECT * FROM ${sql(
-            useFor
-          )} WHERE product_id = ${product_id}`
-        )[0]
-      ) {
-        const added = await sql`INSERT INTO ${sql(useFor)} ${sql(
-          item
-        )} RETURNING *`;
-        devLog({ useFor, added })
-
-        res.status(201).json(added);
-      } else {
-        res.status(200).json({ item: "Already Exist" });
-      }
-    } catch (error) {
-      next(error);
-    }
   });
+ 
 products.route("/:id").delete(async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -83,42 +44,22 @@ products.route("/:id").delete(async (req, res, next) => {
   }
 });
 /***************  END ROUTES TO BASE URL ***************/
-/***************   ROUTES TO FAVORITES ***************/
 
-products.route("/favorites").get(async (req, res, next) => {
-  try {
-    const { user_id } = req.headers;
-    const items = await sql`SELECT 
-    products.product_id, name, image,
-    price, size, refrigerate, products.item,fav_products.id AS fav_id
-  FROM fav_products
-  RIGHT JOIN products
-   ON fav_products.product_id = products.product_id
-  WHERE 
-     user_id = ${user_id}
-  `;
-    res.status(200).json(items);
-  } catch (error) {
-    next(error);
-  }
-});
-/***************  END ROUTES TO FAVORITES ***************/
 
 /*************** ROUTE TO ITEM IN A TABLE ***************/
 products.route("/table").get(async (req, res, next) => {
   try {
     const { user_id, usedfor } = req.headers;
-    devLog({usedfor});
-    
-      const item = await sql`SELECT id,product_id FROM ${sql(
-        usedfor
-      )} WHERE user_id=${user_id}`;
-      if (item) {
-        res.status(200).json(item);
-      } else {
-        next();
-      }
-    
+    devLog({ usedfor });
+
+    const item = await sql`SELECT id,product_id FROM ${sql(
+      usedfor
+    )} WHERE user_id=${user_id}`;
+    if (item) {
+      res.status(200).json(item);
+    } else {
+      next();
+    }
   } catch (error) {
     next(error);
   }
@@ -127,6 +68,7 @@ products.route("/table/:id").patch(async (req, res, next) => {
   try {
     const { id } = req.params;
     const { usedFor, user_id, ...update } = req.body;
+
     const ID = parseInt(id);
     if (isNaN(ID)) {
       next();
@@ -150,138 +92,8 @@ products.route("/table/:id").patch(async (req, res, next) => {
   }
 });
 /*************** END ROUTE TO ITEM IN A TABLE ***************/
-/***************  ROUTE TO ITEMS IN CART ***************/
 
-products.route("/cart").get(async (req, res, next) => {
-  try {
-    const { user_id } = req.headers;
-    const items = await sql`SELECT 
-        products.product_id, name, image,
-        price, size, refrigerate, products.item,cart.id AS cart_id,qty
-      FROM cart
-      INNER JOIN products
-      ON cart.product_id = products.product_id
-      WHERE 
-        user_id = ${user_id}
-  `;
-    res.status(200).json(items);
-  } catch (error) {
-    next(error);
-  }
-});
-products.route("/cart/count").get(async (req, res, next) => {
-  try {
-    const { user_id } = req.headers;
-    const {count} =
-     ( await sql`SELECT COUNT(product_id) FROM cart  WHERE  user_id = ${user_id} `)[0];
-      devLog({count})
-    res.status(200).json(count);
-  } catch (error) {
-    next(error);
-  }
-});
-products
-  .route("/cart/item")
-  .get(async (req, res, next) => {
-    try {
-      const { user_id } = req.headers;
-      const items = await sql`
-       SELECT products.item 
-        FROM products 
-        LEFT JOIN cart 
-          ON cart.product_id = products.product_id 
-        WHERE user_id=${user_id}
-      `;
-      devLog({ retrieved: items });
 
-      res.status(200).json(items);
-    } catch (error) {
-      next(error);
-    }
-  })
-  .delete(async (req, res, next) => {
-    try {
-      const { item, user_id } = req.body;
-      let parsedItem = item.split(" ");
-      const newItem = parsedItem.slice(0, parsedItem.length - 1).join(" ");
-
-      const deleted =
-        await sql`DELETE FROM cart WHERE item=${newItem} AND user_id=${user_id} RETURNING *`;
-        devLog({ deleted, from: "cart" });
-      res.status(200).json(deleted);
-    } catch (error) {
-      next(error);
-    }
-  });
-/*************** END ROUTE TO ITEMS IN CART ***************/
-/***************  ROUTE TO LISTS ***************/
-products
-  .route("/lists")
-  .get(async (req, res, next) => {
-    try {
-      const { user_id } = req.headers;
-      const items = (
-        await sql`SELECT items FROM lists WHERE user_id = ${user_id}`
-      )[0];
-      devLog({ retrieved: items });
-      res.json(items);
-    } catch (error) {
-      next(error);
-    }
-  })
-  .post(async (req, res, next) => {
-    try {
-      const { user_id } = req.body;
-
-      if (!(await sql`SELECT * FROM lists WHERE user_id=${user_id}`)[0]) {
-        const added = (
-          await sql`INSERT INTO lists ${sql({ user_id })} RETURNING *`
-        )[0];
-        devLog({ added, table: "lists" });
-        res.status(201).json(added);
-      } else {
-        res.status(200).json({ item: "Already added" });
-      }
-    } catch (error) {
-      next(error);
-    }
-  })
-  .patch(async (req, res, next) => {
-    try {
-      const { items, user_id, method } = req.body;
-      let updated;
-      switch (method) {
-        case "update":
-          updated = (
-            await sql`UPDATE lists 
-            SET  items = 
-              CASE 
-                WHEN items IS NULL THEN ${items}
-                ELSE (SELECT items FROM lists) || ${items}
-              END
-              WHERE user_id = ${user_id} RETURNING *`
-          )[0];
-          break;
-        case "delete":
-          let oldItems = (
-            await sql`SELECT items FROM  lists WHERE user_id = ${user_id} `
-          )[0];
-          oldItems = oldItems.items.split(",");
-          oldItems.splice(oldItems.indexOf(items.split(" ,")[0]), 1);
-          const newItems = oldItems.join(",");
-          updated = (
-            await sql`UPDATE lists SET items= ${newItems} WHERE user_id=${user_id} RETURNING *`
-          )[0];
-          break;
-      }
-      devLog({ table: "list", updated });
-      res.json(updated);
-    } catch (error) {
-      next(error);
-    }
-  });
-
-/*************** END ROUTE TO LISTS ***************/
 
 products.use((req, res, next) => next());
 export default products;

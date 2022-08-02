@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS fav_products,users,orders,products,cart,lists;
+DROP TABLE IF EXISTS fav_products,users,orders,products,cart,lists,cart_items;
 
 
 
@@ -29,12 +29,13 @@ CREATE TABLE fav_products (
    product_id character(13) REFERENCES products(product_id),
    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE TABLE cart (
+CREATE TABLE cart_items (
    id SERIAL,
    product_id character(13) REFERENCES products(product_id),
    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
    item TEXT NOT NULL,
    qty INTEGER NOT NULL,
+   total_price NUMERIC(10,2) NOT NULL,
    date TIMESTAMP NOT NULL
 );
 CREATE TABLE orders (

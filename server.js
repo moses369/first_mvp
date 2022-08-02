@@ -3,6 +3,9 @@ import express from "express";
 import dotenv from "dotenv";
 import products from "./routes/product.js";
 import users from "./routes/users.js";
+import cart from "./routes/cart.js";
+import favorites from "./routes/favorites.js";
+import lists from "./routes/lists.js";
 import cors from "cors";
 
 dotenv.config();
@@ -19,7 +22,10 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/api/products", products);
+app.use("/api/cart", cart);
 app.use("/api/users", users);
+app.use("/api/favorites", favorites);
+app.use("/api/lists", lists);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
