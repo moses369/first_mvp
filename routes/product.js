@@ -31,7 +31,7 @@ products
       let item;
       if (useFor === "fav_products") item = { user_id, product_id };
       if (useFor === "cart")
-        item = { user_id, product_id, qty, date: Date.now() };
+        item = { user_id, product_id, qty, item:product.item , date: Date.now() };
       if (
         !(
           await sql`SELECT * FROM ${sql(
@@ -83,7 +83,7 @@ products.route("/favorites").get(async (req, res, next) => {
     const { user_id } = req.headers;
     const items = await sql`SELECT 
     products.product_id, name, image,
-    price, size, refrigerate, item,fav_products.id AS fav_id
+    price, size, refrigerate, products.item,fav_products.id AS fav_id
   FROM fav_products
   RIGHT JOIN products
    ON fav_products.product_id = products.product_id
@@ -155,7 +155,7 @@ products.route("/cart").get(async (req, res, next) => {
     const { user_id } = req.headers;
     const items = await sql`SELECT 
         products.product_id, name, image,
-        price, size, refrigerate, item,cart.id AS order_id,qty
+        price, size, refrigerate, products.item,cart.id AS cart_id,qty
       FROM cart
       INNER JOIN products
       ON cart.product_id = products.product_id
@@ -180,15 +180,31 @@ products.route("/cart/count").get(async (req, res, next) => {
 products.route("/cart/item").get(async (req, res, next) => {
   try {
     const { user_id } = req.headers;
-    const items = await sql`SELECT item FROM products 
+    const items = await sql`
+       SELECT products.item 
+        FROM products 
         LEFT JOIN cart 
           ON cart.product_id = products.product_id 
-        WHERE user_id=${user_id}`;
+        WHERE user_id=${user_id}
+      `;
     if (dev()) console.log({ retrieved: items });
 
     res.status(200).json(items);
   } catch (error) {
     next(error);
+  }
+}).delete(async (req,res,next) => {
+  try {
+    const {item, user_id} = req.body
+    const parsedItem = item.split(' ')[0]
+    console.log({parsedItem});
+    
+    const deleted = await sql`DELETE FROM cart WHERE item=${parsedItem} AND user_id=${user_id} RETURNING *`
+    if(dev())console.log({deleted, from:'cart'});
+    res.status(200).json(deleted)
+    
+  } catch (error) {
+    next(error)
   }
 });
 /*************** END ROUTE TO ITEMS IN CART ***************/

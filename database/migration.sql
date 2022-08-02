@@ -33,6 +33,7 @@ CREATE TABLE cart (
    id SERIAL,
    product_id character(13) REFERENCES products(product_id),
    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+   item TEXT NOT NULL,
    qty INTEGER NOT NULL,
    date TIMESTAMP NOT NULL
 );

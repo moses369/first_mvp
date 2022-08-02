@@ -34,8 +34,8 @@ $(window).on("load", async (e) => {
     body: JSON.stringify({ user_id: 1 }),
   };
   await sendReq("/api/products/lists", options);
-  await checkLists();
   await checkCart("", "onload");
+  await checkLists();
 });
 
 ////CART NOTIFACTION
@@ -55,8 +55,7 @@ async function checkCart(productId, useCase) {
 
       let inCart = "ADD TO CART";
       if (
-        $(`.cart`).find(`.product[data-product_id='${productId}'` || res)
-          .length ||
+        $(`.cart`).find(`.product[data-product_id='${productId}'`).length ||
         res
       )
         inCart = "ADDED";
@@ -69,10 +68,12 @@ async function checkCart(productId, useCase) {
       cartNotif();
       return count;
     case "list":
-      const items = await sendReq("api/products/cart/item", {
-        headers: { user_id: 1 },
-      });
-      return items;
+      if ($(".cartCount").is(":visible")) {
+        const items = await sendReq("api/products/cart/item", {
+          headers: { user_id: 1 },
+        });
+        return items;
+      }
   }
 }
 //// END CHECK CART
@@ -98,7 +99,7 @@ function appendCart(
   price,
   size,
   refrigerate,
-  order_id,
+  cart_id,
   fav,
   fav_id,
   qty,
@@ -114,7 +115,7 @@ function appendCart(
   data-price=${price}
   data-size=${size}
   data-refrigerate=${parseSpace(false, refrigerate)}
-  data-order_id=${order_id}
+  data-cart_id=${cart_id}
   data-fav=${fav}
   data-fav_id=${fav_id}
   data-qty = ${qty}
@@ -158,11 +159,13 @@ async function checkLists() {
     const list = items.split(",");
     const cartItems = [];
     const cartRes = await checkCart(0, "list");
-    cartRes.forEach((obj) => {
-      for (const item in obj) {
-        cartItems.push(obj[item]);
-      }
-    });
+    if (cartRes) {
+      cartRes.forEach((obj) => {
+        for (const item in obj) {
+          cartItems.push(obj[item]);
+        }
+      });
+    }
     for (const item of list) {
       let inCart = false;
       if (cartItems.indexOf(item) !== -1) inCart = true;
@@ -180,11 +183,11 @@ function parseSpace(addSpaces, string) {
 }
 ////END PARSE STRING BEFORE/AFTER POST
 //// UPDATE LIST TABLE
-async function updateLists(item,method){
+async function updateLists(item, method) {
   const sendObj = {
     user_id: 1,
-    items: `${item += ','}`,
-    method
+    items: `${(item += ",")}`,
+    method,
   };
   const options = {
     method: "PATCH",
@@ -201,9 +204,8 @@ $(".addToList").on("submit", async (e) => {
   e.preventDefault();
   const newItem = $(`.addToList input[name='product']`).val();
   appendLists(newItem);
-  await updateLists(newItem,'update')
+  await updateLists(newItem, "update");
   $(`.addToList input[name='product']`).val("");
-
 });
 /*************** END ADD ITEMS TO SHOPPING LIST ***************/
 /*************** SHOPPLING LIST ITEM INTERACTION ***************/
@@ -265,20 +267,31 @@ $(".shoppingList .itemList").on("click", async (e) => {
     const item = e.target.parentElement.innerText;
 
     let cartCount = parseInt($cartCount.text());
-    $(`.cart .product[data-item=${parseSpace(false, item)}] `).each(
-      (i, product) => cartCount--
-    );
 
-    $(
-      `.productResults .product[data-item=${parseSpace(
-        false,
-        item
-      )}] .addToCart input[type='submit']`
-    ).val("ADD TO CART");
-    $(`.cart .product[data-item=${parseSpace(false, item)}] `).remove();
-    $cartCount.text(cartCount);
+    const options = {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item, user_id: 1 }),
+    };
+    const deleted = await sendReq(`/api/products/cart/item`, options);
+    const deletedIds = [];
+    deleted.forEach((i) => {
+      for (const item in i) {
+        if (item === "product_id") deletedIds.push(i[item]);
+      }
+    });
+    for (const deletedId of deletedIds) {
+      $(
+        `.productResults .product[data-product_id=${deletedId}] .addToCart input[type='submit']`
+      ).val("ADD TO CART");
+      $(`.cart .product[data-product_id=${deletedId}] `).remove();
+    }
+
+    $cartCount.text(cartCount - deleted.length);
+
+    await checkCart();
+    await updateLists(item, "delete");
     cartNotif();
-    await updateLists(item,'delete')
     e.target.parentElement.remove();
   }
   // END RM ITEM FROM SHOPPING LIST
@@ -362,8 +375,7 @@ const addItem = async (e) => {
       body: JSON.stringify(sentItem),
     };
     const res = await sendReq("api/products", options);
-    const order_id = res[0].id;
-    console.log(res, "line 198 add to cart");
+    const cart_id = res[0].id;
 
     appendCart(
       product_id,
@@ -372,7 +384,7 @@ const addItem = async (e) => {
       price,
       size,
       refrigerate,
-      order_id,
+      cart_id,
       fav,
       fav_id,
       qty,
@@ -438,14 +450,17 @@ $cart.on("click", async (e) => {
   // END UPDATE QTY
   // RM FROM CART
   if (e.target.classList.contains("rm", "FromCart")) {
-    const { product_id, item, order_id } = e.target.parentElement.dataset;
+    const { product_id, item, cart_id } = e.target.parentElement.dataset;
     e.target.parentElement.remove();
     $(
       `.productResults .product[data-product_id = '${product_id}'] .addToCart input[type='submit']`
     ).val("ADD TO CART");
-    $(`.itemList .itemLink[data-item='${item}']`).css({
-      "text-decoration": "none",
-    });
+
+    if (!$(`.cart`).find(`.product[data-item='${item}`).length)
+      $(`.itemList .itemLink[data-item='${item}']`).css({
+        "text-decoration": "none",
+      });
+
     let cartCount = parseInt($cartCount.text());
     cartCount--;
     $cartCount.text(cartCount);
@@ -457,7 +472,7 @@ $cart.on("click", async (e) => {
       body: JSON.stringify({ usedFor: "cart" }),
     };
 
-    const data = await sendReq(`/api/products/${order_id}`, options);
+    const data = await sendReq(`/api/products/${cart_id}`, options);
   }
   // END RM FROM CART
 });
@@ -548,7 +563,7 @@ $(".cartBtn").on("click", async (e) => {
         refrigerate,
         item,
         fav_id,
-        order_id,
+        cart_id,
         fav,
         qty,
       } = cartItem;
@@ -561,7 +576,7 @@ $(".cartBtn").on("click", async (e) => {
           price,
           size,
           refrigerate,
-          order_id,
+          cart_id,
           fav,
           fav_id,
           qty,
