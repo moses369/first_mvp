@@ -30,10 +30,10 @@ lists
         const added = (
           await sql`INSERT INTO lists ${sql({ user_id })} RETURNING *`
         )[0];
-        devLog({ page:'refreshed',added, table: "lists" });
+        devLog({ page: "refreshed", added, table: "lists" });
         res.status(201).json(added);
       } else {
-        devLog({ page:'refreshed',user_id, already: "on list" });
+        devLog({ page: "refreshed", user_id, already: "on list" });
         res.status(200).json({ item: "already added" });
       }
     } catch (error) {
@@ -55,21 +55,22 @@ lists
               END
               WHERE user_id = ${user_id} RETURNING *`
           )[0];
+          res.json(updated);
           break;
         case "delete":
           let oldItems = (
             await sql`SELECT items FROM  lists WHERE user_id = ${user_id} `
           )[0];
           oldItems = oldItems.items.split(",");
-          oldItems.splice(oldItems.indexOf(items.split(" ,")[0]), 1);
+          oldItems.splice(oldItems.indexOf(items.split(",")[0]), 1);
           const newItems = oldItems.join(",");
           updated = (
             await sql`UPDATE lists SET items= ${newItems} WHERE user_id=${user_id} RETURNING *`
           )[0];
+          res.sendStatus(204);
           break;
       }
-      devLog({ table: "list", updated });
-      res.json(updated);
+      devLog({ table: "list", method, items, updated });
     } catch (error) {
       next(error);
     }

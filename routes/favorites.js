@@ -46,9 +46,9 @@ favorites
           await sql`SELECT * FROM fav_products WHERE product_id = ${product_id}`
         )[0]
       ) {
-        const added = await sql`INSERT INTO fav_products ${sql(
+        const added = (await sql`INSERT INTO fav_products ${sql(
           item
-        )} RETURNING *`;
+        )} RETURNING *`)[0];
         devLog({ useFor: "fav_products", added });
         res.status(201).json(added);
       } else {

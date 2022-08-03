@@ -113,11 +113,8 @@ cart
   .delete(async (req, res, next) => {
     try {
       const { item, user_id } = req.body;
-      let parsedItem = item.split(" ");
-      const newItem = parsedItem.slice(0, parsedItem.length - 1).join(" ");
-
       const deleted =
-        await sql`DELETE FROM cart_items WHERE item=${newItem} AND user_id=${user_id} RETURNING *`;
+        await sql`DELETE FROM cart_items WHERE item=${item} AND user_id=${user_id} RETURNING *`;
       devLog({ deleted, from: "cart_items" });
       res.status(200).json(deleted);
     } catch (error) {

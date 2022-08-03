@@ -4,6 +4,7 @@
   --link-color: black;
   --border-color: rgba(0, 0, 0, 0.2);
   --main-color: gray;
+  --button-border: 1px solid var(--border-color)
 }
 * {
   box-sizing: border-box;
@@ -29,16 +30,17 @@ a {
   grid-template-rows: repeat(3, fr);
   margin: 0;
 }
+.productResults,
+.favorites,
+.cartContainer,
 .content.container,
 .topbar,
 .footer,
-.shoppingList{
-   width: min(100%,100%);
+.shoppingList {
+  width: min(100%, 100%);
 }
 .topbar {
   grid-area: 1/1/1/9;
-  display: flex;
-  flex-direction: row;
 }
 .shoppingList {
   grid-area: 2/1/3/3;
@@ -51,44 +53,44 @@ a {
 }
 
 .productResults,
-.favorites,
-.cartContainer{
-   width: min(100%,100%);
-}
-.productResults,
 .favorites {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .cartContainer {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  margin: 0;
+  justify-content: center;
+  padding: 1rem 2rem;
 }
-
-
 
 /*************** END LAYOUT ***************/
 /*************** STORE PRODUCT STYLING ***************/
+.resultContainer h2{
+  padding-left: 4rem;
+  font-size: 2rem;
+}
 .fa-star {
   font-size: 1.75rem;
 }
 .image {
-  width: 15rem;
-  height: 15rem;
+  width: 12rem;
+  height: 12rem;
   object-fit: contain;
   align-self: center;
 }
 .product.store {
   display: flex;
   flex-direction: column;
-  width: min(17rem, 17rem);
+  width: min(14rem, 14rem);
   margin: 1rem;
   padding: 1rem 0.5rem;
   border: 1px solid var(--border-color);
+  border-radius: .33rem;
   justify-content: space-between;
 }
 .product.store .left > p,
@@ -96,20 +98,20 @@ a {
   margin-top: 0.25rem;
   margin-bottom: 0.7rem;
   letter-spacing: 0.5px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 .product.store .left > p > span {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 .product.store .left p + p {
   margin: 0;
 }
 .product.store .description {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 .product.store .price {
-  font-size: 1.75rem !important;
+  font-size: 1.7rem !important;
   font-weight: 1000;
   text-align: center;
   width: 100%;
@@ -118,7 +120,7 @@ a {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  height: min(8rem, 8rem);
+  height: min(7rem, 7rem);
 }
 .product.store .right {
   width: min(100%, 40%);
@@ -140,84 +142,223 @@ a {
   justify-content: space-between;
 }
 .addToCart label {
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 .addToCart input {
-  font-size: 1rem;
+  font-size: 1.25;
   width: 3rem;
   height: min-content;
   text-align: center;
 }
 .addToCart button[type="submit"] {
-  padding: 0.75rem;
-  font-size: 1.7rem;
+  padding: 0.5rem;
+  font-size: 1.5rem;
   border-radius: 50%;
   align-items: center;
   align-self: center;
+  border: var(--button-border);
 }
 
 /*************** END STORE PRODUCT STYLING ***************/
 /***************  CART PRODUCT STYLING ***************/
-.product.inCart{
-   margin: 0;
-   align-self: center;
-   display: flex;
-   flex-direction: row;
-   flex-wrap: nowrap;
-   width:90%;
-   padding:1rem;
-   align-items: center;
-   justify-content: space-between;
-   border: 1px solid var(--border-color);
-   height: min-content;
+.product.inCart {
+  margin: 0;
+  align-self: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+  padding: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border-color);
+  height: min(14rem, 14rem);
 }
-.product.inCart .info{
-   align-self: center ;
-   font-size: 1.25rem;
+.product.inCart .info {
+  align-self: center;
+  font-size: 1.1rem;
 }
-.product.inCart h2{
-   font-size: 1.75rem;
-   max-width: 100%;
-   text-align: center;
+.product.inCart h2 {
+  font-size: 1.5rem;
+  max-width: 100%;
+  text-align: center;
 }
-.product.inCart .column{
-   display: flex;
-   flex-direction: column;
-   flex-wrap: nowrap;
-   height: 100%;
-   max-width: 45%;
+.product.inCart .column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 100%;
+  max-width: 45%;
 }
-.product.inCart > .rm.fromCart{
-   width: fit-content;
-   height: fit-content;
-   background: transparent;
-   border: none;
-   font-size: 2rem;
+.product.inCart .row .rm.fromCart {
+  width: fit-content;
+  height: fit-content;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
 }
-.product.inCart .price{
-   font-size: 3rem;
-   font-weight: 700;
+.product.inCart .price {
+  font-size: 2rem;
+  font-weight: 700;
 }
 
-.product.inCart label,
-.product.inCart input[name='qty']{
-   font-size: 1.75rem;
+.product.inCart .row label,
+.product.inCart .row input[name="qty"] {
+  font-size: 1.3rem;
 }
-.product.inCart input[name='qty']{
-  
-   width: 5rem;
+.product.inCart .row input[name="qty"] {
+  width: 5rem;
 }
-.cartContainer .checkOut{
-display: flex;
-flex-direction: row;
-justify-content: flex-end;
-align-items: center;
-font-size: 4rem;
+.cartContainer .checkOut {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 2.3rem;
 }
-.cartContainer .checkOut .buyBtn{
-   font-size: 4rem;
-   border-radius: 1rem;
-   padding: .5rem;
-   margin-left: 1.5rem;
+.cartContainer .checkOut .buyBtn {
+  font-size: 1.75rem;
+  border-radius: 1rem;
+  padding: 0.5rem;
+  margin-left: 1.5rem;
+}
+.product.inCart .row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 25%;
+  justify-content: space-between;
+  align-items: center;
 }
 /*************** END CART PRODUCT STYLING ***************/
+/***************  NAV BAR STYLING ***************/
+.topbar {
+  display: flex;
+  flex-direction: row;
+  padding: 0.25rem 0.5rem;
+
+  height: 5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.topbar .title,
+.topbar .nav {
+  width: 100%;
+  max-width: 50%;
+}
+.topbar .title {
+  display: flex;
+  flex-direction: row;
+}
+.topbar .title > span > h1 {
+  margin: 0;
+  position: absolute;
+  bottom: 1.5rem;
+}
+.topbar .title > span {
+  align-self: flex-start;
+  width: 30%;
+  height: 100%;
+  text-align: center;
+  position: relative;
+}
+.topbar .nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  position: relative;
+}
+.topbar .nav .icons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  max-width: 50%;
+  position: absolute;
+  bottom: 0.75rem;
+}
+
+.cartBtn > span {
+  position: absolute;
+  font-size: 1.1rem;
+  top: -1rem;
+  left: -0.75rem;
+  border: 1px solid red;
+  width: 1.5rem;
+  border-radius: 50%;
+  color: aliceblue;
+  background: red;
+}
+.nav .btn {
+  margin: 0 0.5rem;
+  font-size: 1.75rem;
+  position: relative;
+  border: none;
+  background: transparent;
+}
+/*************** END NAV BAR STYLING ***************/
+/***************  SHOPPING LISTS STYLING ***************/
+.shoppingList {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-color);
+  width: min(17rem,17rem);
+}
+.shoppingList h2{
+  text-align: center;
+  font-size: 1.75rem;
+}
+.shoppingList .addToList input{
+  width: 12rem;
+  padding: .12rem;
+  padding-left: 1rem;
+  height: 2rem;
+  border: var(--button-border);
+  border-radius: .5rem;
+  margin-right: .5rem ;
+  margin-bottom:1.5rem ;
+}
+.shoppingList .addToList button{
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  padding: .2rem;
+  text-align: center;
+  border: var(--button-border)
+}
+.shoppingList .formWrap{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.shoppingList .itemList{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 3rem;
+}
+.itemList > .item{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  margin-bottom: .5rem;
+}
+
+.itemList > .item > button{
+  background: transparent;
+  border: none;
+}
+.itemList > .item > a{
+ font-size: 1.5rem;
+ text-transform: capitalize;
+}
+
+
+/*************** END SHOPPING LISTS STYLING ***************/

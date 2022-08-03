@@ -18,30 +18,36 @@
     <header class="topbar">
       <div class="title">
 
-        <h1> Shopping Lists</h1>
+        <span><h1> Shopping Lists</h1></span>
       </div>
       <nav class="nav">
-        <button class="btn cartBtn">
-          <span class="cartCount">0</span>
-          <i class="fa-solid fa-cart-shopping"></i>
-        </button>
+        <div class="icons">
+          <button class="btn cartBtn">
+            <span class="cartCount">0</span>
+            <i class="fa-solid fa-cart-shopping"></i>
+          </button>
+  
+          <button class="btn favBtn"><i class="fa-solid fa-star "></i></button>
 
-        <button class="btn favBtn"><i class="fa-solid fa-bag-shopping "></i></button>
+        </div>
       </nav>
     </header>
 
     <div class="shoppingList">
       <h2>My List</h2>
-      <form action="" class="addToList">
-        <input type="text" autocomplete="off" name="product" />
-        <input type="submit" />
-      </form>
+      <div class="formWrap">
+        <form action="" class="addToList">
+          <input type="text" autocomplete="off" name="product" placeholder="Add Items" />
+          <button type="submit"><i class="fa-solid fa-plus addToCart"></i></button>
+        </form>
+
+      </div>
       <div class="itemList"></div>
     </div>
 
     <main class="content container">
       <div class="resultContainer">
-        <h2>Results</h2>
+        <div><h2>Results</h2></div>
         <div class="productResults">
 
           <div class="product store" data-product_id="0024200900000" data-name="Beef" choice="" boneless="" ribeye="" steak="" value="" pack="" (about="" 3="" steaks="" per="" pack)="" data-image="https://www.kroger.com/product/images/xlarge/front/0024200900000" data-price="13.99" data-size="1_lb" data-refrigerate="Keep_Refrigerated" data-fav="false" data-fav_id="0" data-item="steak">

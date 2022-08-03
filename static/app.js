@@ -1,3 +1,5 @@
+const devLog = (obj, line = "") => console.log(obj, line);
+
 async function sendReq(url, options) {
   try {
     const res = await fetch(url, options);
@@ -8,7 +10,7 @@ async function sendReq(url, options) {
       } else {
         data = await res.text();
       }
-      console.log("RES STATUS", res.status, "line 11");
+      devLog("RES STATUS", res.status, "~ line 11");
 
       return data;
     } else {
@@ -89,7 +91,7 @@ async function patchCartprice(newTotal, newQty, productObj) {
     }),
   };
   const update = await sendReq(`/api/products/table/${product_id}`, options);
-  console.log(update);
+  devLog(update, "` line 94");
 }
 ///// END PATCH CART PRICE
 
@@ -101,13 +103,13 @@ async function livePriceUpdate(e, inCart = false) {
     const $input = $(
       `.product[data-product_id = ${product_id}] input[name='qty']`
     );
-    
+
     $input.unbind("change").bind("change", async (e) => {
       const qty = $input.val();
       const total = price * qty;
-      $(`.product[data-product_id = ${product_id}] .price`).text(
-        `$${total.toFixed(2)}`
-      ).attr('qty',qty)
+      $(`.product[data-product_id = ${product_id}] .price`)
+        .text(`$${total.toFixed(2)}`)
+        .attr("qty", qty);
 
       if (
         $(`.product[data-product_id=${product_id}] .addToCart i`).hasClass(
@@ -124,7 +126,7 @@ async function livePriceUpdate(e, inCart = false) {
 
         let totalPrice = await getCartTotal();
         totalPrice = totalPrice ? totalPrice : 0;
-        $cartTotal.text(`$${(totalPrice)}`).attr("data-total_price", totalPrice);
+        $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
       }
     });
   }
@@ -184,15 +186,15 @@ async function getItems(usedFor) {
     products.set(product_id, item);
   }
 
-
   return products;
 }
 ////  END GET ITEMS FROM A TABLE MATCHIG ID
 ////  CHECK FAV
 function checkFav(productId, mapOfIds) {
   const fav = mapOfIds.has(productId);
-  const fav_id = fav ? mapOfIds.get(productId) : 0;
+  const fav_id = fav ? mapOfIds.get(productId).id : 0;
   const favObj = { fav, fav_id };
+
   return favObj;
 }
 //// END CHECK FAV
@@ -230,18 +232,22 @@ function appendCart(
   data-qty = ${qty}
   data-item = ${parseSpace(false, item)}
   data-total_price=${total_price}>
-    <i class="fa-${star} fa-star"></i>
-    <img class="image" src="${image}" alt="">
+    <div class="row">
+      <i class="fa-${star} fa-star"></i>
+      <img class="image" src="${image}" alt="">
+    </div>
     <div class="column">
       <h2 class="description">${parseSpace(true, name)}</h2>
       <p class='info'>  ${parseSpace(true, size)} <br><span> ${temp}</span> </p>
     </div>
-    <p class="price">$${total_price.toFixed(2)} </p>  
-    <form action="" class='cartQty'>
-      <label for="qty">Qty</label>
-      <input class="cartQty" type="number" name="qty" id="qty" min="1" value="${qty}">
-    </form>
-    <button class="btn rm fromCart">X</button>
+    <div class="row">
+      <p class="price">$${total_price.toFixed(2)} </p>  
+      <form action="" class='cartQty'>
+        <label for="qty">Qty</label>
+        <input class="cartQty" type="number" name="qty" id="qty" min="1" value="${qty}">
+      </form>
+      <button class="btn rm fromCart">X</button>
+    </div>
   </div>
 `);
 }
@@ -255,7 +261,7 @@ function appendLists(newItem, inCart) {
       false,
       newItem
     )}' class='itemLink'>${newItem}</a>
-      <i class="fa-solid fa-trash" data-trash='true'></i>
+      <button data-trash= 'true'><i class="fa-solid fa-trash" data-trash='true'></i></button>
     </div>  
   `
   );
@@ -296,10 +302,10 @@ function parseSpace(addSpaces, string) {
 ////END PARSE STRING BEFORE/AFTER POST
 //// UPDATE LIST TABLE
 async function updateLists(item, method) {
-  let additem = item.toLowerCase();
+  devLog({ item, method });
   const sendObj = {
     user_id,
-    items: `${(additem += ",")}`,
+    items: `${(item += ",")}`,
     method,
   };
   const options = {
@@ -315,7 +321,7 @@ async function updateLists(item, method) {
 /*************** ADD ITEMS TO SHOPPING LIST ***************/
 $(".addToList").on("submit", async (e) => {
   e.preventDefault();
-  const newItem = $(`.addToList input[name='product']`).val();
+  const newItem = $(`.addToList input[name='product']`).val().toLowerCase();
   appendLists(newItem);
   await updateLists(newItem, "update");
   $(`.addToList input[name='product']`).val("");
@@ -334,6 +340,9 @@ $(".shoppingList .itemList").on("click", async (e) => {
     const cartMap = await getItems(cart_items);
     $(".productResults").empty();
     if (data) {
+      $(`.resultContainer  h2`)
+        .text(`Items Matching: ${item}`)
+        .css({ "text-transform": "capitalize" });
       for (let product of data) {
         const { images, description, productId, items, temperature } = product;
 
@@ -391,14 +400,14 @@ $(".shoppingList .itemList").on("click", async (e) => {
         `);
       }
     }
-    console.log(url, data);
+    devLog({ url, data }, ` line 402`);
     $cartContainer.hide();
     $favContainer.hide();
     $resultContainer.show();
     // END RETRIEVE ITEM
     // RM ITEM FROM SHOPPING LIST
   } else if (trash) {
-    const item = e.target.closest(".item").innerText;
+    const item = e.target.closest(".item").innerText.toLowerCase();
 
     let cartCount = parseInt($cartCount.text());
 
@@ -411,7 +420,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
     const deletedIds = new Map();
     deleted.forEach((i) => {
       const { product_id, total_price } = i;
-      console.log({ product_id, total_price });
+      devLog({ product_id, total_price }, "line 422");
       deletedIds.set(product_id, total_price);
     });
     deletedIds.forEach((price, deletedId) => {
@@ -431,7 +440,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
     $cartCount.text(cartCount - deleted.length);
     await updateLists(item, "delete");
     cartNotif();
-    e.target.parentElement.remove();
+    e.target.closest(".item").remove();
   }
   // END RM ITEM FROM SHOPPING LIST
 });
@@ -463,8 +472,8 @@ const setFav = async (e, inContainer) => {
         body: JSON.stringify(sentObj),
       };
 
-      const res = (await sendReq("/api/favorites", options))[0];
-      console.log(res);
+      const res = await sendReq("/api/favorites", options);
+      devLog(res, "line 475");
 
       product.dataset.fav_id = res.id;
     } else {
@@ -489,7 +498,7 @@ const setFav = async (e, inContainer) => {
 const addItem = async (e) => {
   e.preventDefault();
   const product = e.target.closest(".product");
-  console.log(product.dataset);
+  devLog(product.dataset, " line 500");
 
   const { product_id, name, image, price, size, refrigerate, item } =
     product.dataset;
@@ -611,7 +620,7 @@ $(`.favBtn`).on("click", async (e) => {
       headers: { user_id },
     };
     const res = await sendReq("/api/favorites", options);
-    console.log(res);
+    devLog(res, " line 622");
 
     for (const product of res) {
       const {
