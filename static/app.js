@@ -1,4 +1,4 @@
-const devLog = (obj, line = "") => console.log(obj, line);
+// const console.log = (obj, line = "") => console.log(obj, line);
 
 async function sendReq(url, options) {
   try {
@@ -10,7 +10,7 @@ async function sendReq(url, options) {
       } else {
         data = await res.text();
       }
-      devLog("RES STATUS", res.status, "~ line 11");
+      console.log("RES STATUS", res.status, "~ line 11");
 
       return data;
     } else {
@@ -26,6 +26,7 @@ const user_id = 1;
 const inCartClass = "fa-check";
 const outCartClass = "fa-plus";
 
+const $homeContainer = $('.homeContainer')
 const $resultContainer = $(".resultContainer");
 
 const $favContainer = $(".favContainer");
@@ -40,7 +41,7 @@ const cart_items = "cart_items";
 const fav_products = "fav_products";
 $(window).on("load", async (e) => {
   cartNotif();
-
+  $resultContainer.hide()
   $favContainer.hide();
   $cartContainer.hide();
   const options = {
@@ -75,7 +76,14 @@ function toggleDivs(useCase) {
       }
       break;
   }
+  $homeContainer.hide()
 }
+$(`.title span`).unbind('click').bind('click', e =>{
+  $cartContainer.hide()
+  $favContainer.hide()
+  $resultContainer.hide()
+  $homeContainer.show()
+})
 ///// END OPEN?CLOSE DIV
 ///// PATCH CART PRICE
 async function patchCartprice(newTotal, newQty, productObj) {
@@ -91,7 +99,7 @@ async function patchCartprice(newTotal, newQty, productObj) {
     }),
   };
   const update = await sendReq(`/api/products/table/${product_id}`, options);
-  devLog(update, "` line 94");
+  console.log(update, "` line 94");
 }
 ///// END PATCH CART PRICE
 
@@ -104,8 +112,10 @@ async function livePriceUpdate(e, inCart = false) {
       `.product[data-product_id = ${product_id}] input[name='qty']`
     );
 
-    $input.unbind("change").bind("change", async (e) => {
-      const qty = $input.val();
+    $input.unbind('input').bind("input", async (e) => {
+      console.log('changed');
+      
+      const qty = e.target.value;
       const total = price * qty;
       $(`.product[data-product_id = ${product_id}] .price`)
         .text(`$${total.toFixed(2)}`)
@@ -123,11 +133,12 @@ async function livePriceUpdate(e, inCart = false) {
         product.dataset.total_price = total;
 
         await patchCartprice(total, qty, product.dataset);
-
+        
         let totalPrice = await getCartTotal();
         totalPrice = totalPrice ? totalPrice : 0;
         $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
       }
+      console.log({total,qty,product});
     });
   }
 }
@@ -302,7 +313,6 @@ function parseSpace(addSpaces, string) {
 ////END PARSE STRING BEFORE/AFTER POST
 //// UPDATE LIST TABLE
 async function updateLists(item, method) {
-  devLog({ item, method });
   const sendObj = {
     user_id,
     items: `${(item += ",")}`,
@@ -375,34 +385,37 @@ $(".shoppingList .itemList").on("click", async (e) => {
           data-fav_id=${fav_id}
           data-item = ${parseSpace(false, item)}>
             <i class="fa-${star} fa-star"></i>
-            <img class="image" src="${pImage}" alt="">
-            <h3 class="description">${description}</h3>
-            <div class='content'>
-              <div class='left'>
-                <p class="price">$${(items[0].price.regular * qty).toFixed(
-                  2
-                )} </p>
-                <p class='info'> ${
-                  items[0].size
-                } <br><span>${refrigerate}</span></p>
+           <div class="imgWrapper"> <img class="image" src="${pImage}" alt=""></div>
+      
+              <h3 class="description">${description}</h3>
+              <div class='content'>
+                <div class='left'>
+                  <p class="price">$${(items[0].price.regular * qty).toFixed(
+                    2
+                  )} </p>
+                  <p class='info'> ${
+                    items[0].size
+                  } <br><span>${refrigerate}</span></p>
+                </div>
+                <div class='right'>
+                  <form action="" class="addToCart" >
+                    <div class='qty'>
+                      <label for="qty">Qty</label>
+                      <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
+                    </div>
+                    <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
+                  </form>
+                </div>
               </div>
-              <div class='right'>
-                <form action="" class="addToCart" >
-                  <div class='qty'>
-                    <label for="qty">Qty</label>
-                    <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
-                  </div>
-                  <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
-                </form>
-              </div>
-            </div>
+           
           </div>
         `);
       }
     }
-    devLog({ url, data }, ` line 402`);
+    console.log({ url, data }, ` line 413`);
     $cartContainer.hide();
     $favContainer.hide();
+    $homeContainer.hide()
     $resultContainer.show();
     // END RETRIEVE ITEM
     // RM ITEM FROM SHOPPING LIST
@@ -420,7 +433,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
     const deletedIds = new Map();
     deleted.forEach((i) => {
       const { product_id, total_price } = i;
-      devLog({ product_id, total_price }, "line 422");
+      console.log({ product_id, total_price }, "line 422");
       deletedIds.set(product_id, total_price);
     });
     deletedIds.forEach((price, deletedId) => {
@@ -473,7 +486,7 @@ const setFav = async (e, inContainer) => {
       };
 
       const res = await sendReq("/api/favorites", options);
-      devLog(res, "line 475");
+      console.log(res, "line 475");
 
       product.dataset.fav_id = res.id;
     } else {
@@ -498,7 +511,7 @@ const setFav = async (e, inContainer) => {
 const addItem = async (e) => {
   e.preventDefault();
   const product = e.target.closest(".product");
-  devLog(product.dataset, " line 500");
+  console.log(product.dataset, " line 500");
 
   const { product_id, name, image, price, size, refrigerate, item } =
     product.dataset;
@@ -620,7 +633,7 @@ $(`.favBtn`).on("click", async (e) => {
       headers: { user_id },
     };
     const res = await sendReq("/api/favorites", options);
-    devLog(res, " line 622");
+    console.log(res, " line 622");
 
     for (const product of res) {
       const {
@@ -657,23 +670,25 @@ $(`.favBtn`).on("click", async (e) => {
           data-qty=${qty}
           data-item = ${parseSpace(false, item)}>
             <i class="fa-solid fa-star"></i>
-            <img class="image" src="${image}" alt="">
-            <h3 class="description">${parseSpace(true, name)}</h3>
-            <div class="content">
-              <div class="left">
-                <p class="price">$${(price * qty).toFixed(2)} </p>
-                <p class='info'> Size: ${parseSpace(true, size)} <br>${temp}</p>
+            <div class="imgWrapper"> <img class="image" src="${image}" alt=""> </div>
+        
+              <h3 class="description">${parseSpace(true, name)}</h3>
+              <div class="content">
+                <div class="left">
+                  <p class="price">$${(price * qty).toFixed(2)} </p>
+                  <p class='info'> Size: ${parseSpace(true, size)} <br>${temp}</p>
+                </div>
+                <div class="right">
+                  <form action="" class="addToCart" >
+                    <div class='qty'>
+                    <label for="qty">Qty</label>
+                      <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
+                    </div>
+                    <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
+                    </form>
+                </div>
               </div>
-              <div class="right">
-                <form action="" class="addToCart" >
-                  <div class='qty'>
-                   <label for="qty">Qty</label>
-                    <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
-                  </div>
-                   <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
-                  </form>
-              </div>
-            </div>
+            
           </div>
         `);
       }

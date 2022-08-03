@@ -1,21 +1,33 @@
 /*************** GENERAL TAG STYLING ***************/
 :root {
-  --font-color: black;
+  --font-color: aliceblue;
   --link-color: black;
   --border-color: rgba(0, 0, 0, 0.2);
-  --main-color: gray;
-  --button-border: 1px solid var(--border-color)
+  --main-color: rgb(53,94,59);
+  --button-border: 1px solid var(--border-color);
 }
 * {
   box-sizing: border-box;
   letter-spacing: 0.5px;
+  
 }
+button,
+a,
+.title h1,
+input[type="number"] {
+  cursor: pointer;
+}
+body {
+  height: 100%;
+}
+
 h1,
 h2,
 h3,
 h4 {
   letter-spacing: 1px;
 }
+
 a {
   text-decoration: none;
 }
@@ -34,19 +46,22 @@ a {
 .favorites,
 .cartContainer,
 .content.container,
+.homeContainer,
 .topbar,
 .footer,
 .shoppingList {
   width: min(100%, 100%);
+  height: min(100%, 100%);
 }
+
 .topbar {
   grid-area: 1/1/1/9;
 }
 .shoppingList {
-  grid-area: 2/1/3/3;
+  grid-area: 2/1/3/2;
 }
 .content.container {
-  grid-area: 2/3/3/9;
+  grid-area: 2/2/3/9;
 }
 .footer {
   grid-area: 3/1/3/9;
@@ -69,13 +84,21 @@ a {
 }
 
 /*************** END LAYOUT ***************/
-/*************** STORE PRODUCT STYLING ***************/
-.resultContainer h2{
+/***************  CONTAINER TITLES ***************/
+/*************** END CONTAINER TITLES ***************/
+.containerTitle {
   padding-left: 4rem;
   font-size: 2rem;
 }
-.fa-star {
+.favContainer > h2 {
+  padding-left: 1rem;
+}
+/*************** STORE PRODUCT STYLING ***************/
+.product.store .fa-star {
   font-size: 1.75rem;
+  color: var(--font-color);
+  margin-bottom: .25rem;
+  padding-left: .5rem;
 }
 .image {
   width: 12rem;
@@ -83,16 +106,23 @@ a {
   object-fit: contain;
   align-self: center;
 }
+.product.store .imgWrapper{
+  width: 100%;
+  background: white;
+  border-radius: .25rem;
+}
 .product.store {
   display: flex;
   flex-direction: column;
   width: min(14rem, 14rem);
   margin: 1rem;
-  padding: 1rem 0.5rem;
+  padding: .5rem 0;
   border: 1px solid var(--border-color);
-  border-radius: .33rem;
+  border-radius: 0.33rem;
   justify-content: space-between;
+  background: var(--main-color);
 }
+
 .product.store .left > p,
 .product.store .description {
   margin-top: 0.25rem;
@@ -116,11 +146,19 @@ a {
   text-align: center;
   width: 100%;
 }
+
 .product.store .content {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   height: min(7rem, 7rem);
+  padding: .5rem;
+  color: var(--font-color);
+}
+.product.store .description{
+  padding: 0 .5rem;
+  color: var(--font-color);
+  
 }
 .product.store .right {
   width: min(100%, 40%);
@@ -303,62 +341,122 @@ a {
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border-color);
-  width: min(17rem,17rem);
+  width: min(17rem, 17rem);
+  background: var(--main-color);
+
 }
-.shoppingList h2{
+.shoppingList h2 {
   text-align: center;
   font-size: 1.75rem;
 }
-.shoppingList .addToList input{
+.shoppingList .addToList input {
   width: 12rem;
-  padding: .12rem;
+  padding: 0.12rem;
   padding-left: 1rem;
   height: 2rem;
   border: var(--button-border);
-  border-radius: .5rem;
-  margin-right: .5rem ;
-  margin-bottom:1.5rem ;
+  border-radius: 0.5rem;
+  margin-right: 0.5rem;
+  margin-bottom: 1.5rem;
 }
-.shoppingList .addToList button{
+.shoppingList .addToList button {
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
   font-size: 1.25rem;
-  padding: .2rem;
+  padding: 0.2rem;
   text-align: center;
-  border: var(--button-border)
+  border: var(--button-border);
 }
-.shoppingList .formWrap{
+.shoppingList .formWrap {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 }
-.shoppingList .itemList{
+.shoppingList .itemList {
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 3rem;
+  padding: .5rem;
+  border-radius: .5rem;
+  background: var(--font-color);
+  
 }
-.itemList > .item{
+.shoppingList .listWrap{
+  align-self: center;
+  width: 13rem;
+}
+.itemList > .item {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   text-align: center;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
-.itemList > .item > button{
+.itemList > .item > button {
   background: transparent;
   border: none;
 }
-.itemList > .item > a{
- font-size: 1.5rem;
- text-transform: capitalize;
+.itemList > .item > a {
+  font-size: 1.5rem;
+  text-transform: capitalize;
 }
 
-
 /*************** END SHOPPING LISTS STYLING ***************/
+/***************  FOOTER STYLING ***************/
+.footer {
+  height: min(4rem, 4rem);
+  text-align: center;
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+/*************** END FOOTER STYLING ***************/
+/***************  TUTORIAL STYLING ***************/
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tutorialTitle {
+  text-align: center;
+  font-size: 1.75rem;
+}
+.homeContainer .tutorial {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+.homeContainer .tutorial h4 {
+  font-size: 1.25rem;
+  height: 2rem;
+  margin: 0;
+
+}
+
+.homeContainer .tutorial img {
+  width: 20rem;
+  height: 20rem;
+  object-fit: contain;
+  margin-bottom: .75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.homeContainer .tutorial > div {
+  width: min-content
+
+}
+.homeContainer .tutorial .listsTutorial img {
+  width: 15rem;
+  height: 15rem;
+  object-fit: contain;
+
+}
+.homeContainer .tutorial >div >p{
+  line-height:1.12rem;
+}
+
+/*************** END TUTORIAL STYLING ***************/

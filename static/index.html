@@ -15,10 +15,13 @@
 
 <body>
   <div class="site container">
+
     <header class="topbar">
       <div class="title">
 
-        <span><h1> Shopping Lists</h1></span>
+        <span>
+          <h1> Shopping Lists</h1>
+        </span>
       </div>
       <nav class="nav">
         <div class="icons">
@@ -26,7 +29,7 @@
             <span class="cartCount">0</span>
             <i class="fa-solid fa-cart-shopping"></i>
           </button>
-  
+
           <button class="btn favBtn"><i class="fa-solid fa-star "></i></button>
 
         </div>
@@ -42,40 +45,43 @@
         </form>
 
       </div>
-      <div class="itemList"></div>
+      <div class="listWrap">
+
+        <div class="itemList"></div>
+      </div>
     </div>
 
     <main class="content container">
-      <div class="resultContainer">
-        <div><h2>Results</h2></div>
-        <div class="productResults">
+      <div class="homeContainer">
+        <h2 class="containerTitle">Welcome ${UserName}!</h2>
+        <h3 class="tutorialTitle">Tutorial</h3>
+        <div class="tutorial">
+          <div class="listsTutorial">
+            <h4>Create a List</h4>
 
-          <div class="product store" data-product_id="0024200900000" data-name="Beef" choice="" boneless="" ribeye="" steak="" value="" pack="" (about="" 3="" steaks="" per="" pack)="" data-image="https://www.kroger.com/product/images/xlarge/front/0024200900000" data-price="13.99" data-size="1_lb" data-refrigerate="Keep_Refrigerated" data-fav="false" data-fav_id="0" data-item="steak">
-            <i class="fa-regular fa-star"></i>
-            <img class="image" src="https://www.kroger.com/product/images/xlarge/front/0024200900000" alt="">
-            <h3 class="description">Beef Choice Boneless Ribeye Steak Value Pack (About 3 Steaks per Pack)</h3>
-            <div class="content">
-              <div class="left">
-                <p class="price">$13.99 </p>
-                <p class="info"> 1 lb <br><span>Keep Refrigerated</span></p>
-              </div>
-              <div class="right">
-                <form action="" class="addToCart">
-                  <div class="qty">
-                    <label for="qty">Qty</label>
-                    <input class="addToCart" type="number" name="qty" id="qty" min="1" value="1">
-                  </div>
-                  <button class="addToCart" type="submit"><i class="fa-solid fa-plus addToCart"></i></button>
-                </form>
-              </div>
-            </div>
+            <img src="img/listTutorial.jpg" alt="">
+            <p>Create your shopping list and then click the word to find related products. Once an item is added to your
+              cart it will be crossed out.</p>
+
+          </div>
+          <div class="qtyTutorial">
+            <h4>Update Cart Quanity</h4>
+
+            <img src="img/qtyTutorial.jpg" alt="">
+            <p>Once added to your cart you can change the quanity anywhere. </p>
           </div>
 
         </div>
       </div>
 
+      <div class="resultContainer">
+        <h2 class="containerTitle">Results</h2>
+        <div class="productResults">
+        </div>
+      </div>
+
       <div class="cartContainer">
-        <h2>Cart</h2>
+        <h2 class="containerTitle">Cart</h2>
         <div class="cart">
         </div>
         <div class="checkOut">
@@ -85,13 +91,14 @@
       </div>
 
       <div class="favContainer">
-        <h2>Favorites</h2>
+        <h2 class="containerTitle">Favorites</h2>
         <div class="favorites">
         </div>
       </div>
-  </div>
-  </main>
-  <footer class="footer"></footer>
+    </main>
+    <footer class="footer">
+      <p>&#169Shopping Lists</p>
+    </footer>
   </div>
 </body>
 
