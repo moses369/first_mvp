@@ -38,6 +38,7 @@ const cart_items = "cart_items";
 const fav_products = "fav_products";
 $(window).on("load", async (e) => {
   cartNotif();
+
   $favContainer.hide();
   $cartContainer.hide();
   const options = {
@@ -182,7 +183,7 @@ async function getItems(usedFor) {
     const { product_id, id } = item;
     products.set(product_id, item);
   }
-  console.log(products);
+
 
   return products;
 }
@@ -218,7 +219,7 @@ function appendCart(
   $cart.append(`
   <div class="product inCart" 
   data-product_id=${product_id} 
-  data-name=${name} 
+  data-name=${parseSpace(false, name)} 
   data-image=${image} 
   data-price=${price}
   data-size=${parseSpace(false, size)}
@@ -231,13 +232,16 @@ function appendCart(
   data-total_price=${total_price}>
     <i class="fa-${star} fa-star"></i>
     <img class="image" src="${image}" alt="">
-    <h2 class="description">${name}</h2>
-    <p class='info'> Size: ${parseSpace(true, size)} <br> ${temp} </p>
+    <div class="column">
+      <h2 class="description">${parseSpace(true, name)}</h2>
+      <p class='info'>  ${parseSpace(true, size)} <br><span> ${temp}</span> </p>
+    </div>
     <p class="price">$${total_price.toFixed(2)} </p>  
     <form action="" class='cartQty'>
+      <label for="qty">Qty</label>
       <input class="cartQty" type="number" name="qty" id="qty" min="1" value="${qty}">
     </form>
-    <button class="btn rm FromCart">X</button>
+    <button class="btn rm fromCart">X</button>
   </div>
 `);
 }
@@ -347,12 +351,13 @@ $(".shoppingList .itemList").on("click", async (e) => {
         const inCart = await checkCart(productId, "btn", cartMap);
         const { fav_id, fav } = checkFav(productId, favMap);
         const star = fav ? "solid" : "regular";
+
         const qty = inCart === inCartClass ? cartMap.get(productId).qty : 1;
 
         $(".productResults").append(`
         <div class="product store" 
           data-product_id=${productId} 
-          data-name=${description} 
+          data-name=${parseSpace(false, description)} 
           data-image=${pImage} 
           data-price=${items[0].price.regular}
           data-size=${parseSpace(false, items[0].size)}
@@ -560,7 +565,7 @@ $cart.on("click", async (e) => {
   await livePriceUpdate(e, true);
 
   // RM FROM CART
-  if (e.target.classList.contains("rm", "FromCart")) {
+  if (e.target.classList.contains("rm", "fromCart")) {
     const { product_id, item, cart_item_id, total_price, price } =
       e.target.closest(".product").dataset;
     e.target.closest(".product").remove();
@@ -633,7 +638,7 @@ $(`.favBtn`).on("click", async (e) => {
         $favorites.append(`
           <div class='product store'
           data-product_id=${product_id} 
-          data-name=${name} 
+          data-name=${parseSpace(false, name)} 
           data-image=${image} 
           data-price=${price}
           data-size=${parseSpace(false, size)}
@@ -644,7 +649,7 @@ $(`.favBtn`).on("click", async (e) => {
           data-item = ${parseSpace(false, item)}>
             <i class="fa-solid fa-star"></i>
             <img class="image" src="${image}" alt="">
-            <h3 class="description">${name}</h3>
+            <h3 class="description">${parseSpace(true, name)}</h3>
             <div class="content">
               <div class="left">
                 <p class="price">$${(price * qty).toFixed(2)} </p>

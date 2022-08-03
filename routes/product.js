@@ -50,12 +50,13 @@ products.route("/:id").delete(async (req, res, next) => {
 products.route("/table").get(async (req, res, next) => {
   try {
     const { user_id, usedfor } = req.headers;
-    devLog({ usedfor });
-
+    
     const item = await sql`SELECT * FROM ${sql(
       usedfor
-    )} WHERE user_id=${user_id}`;
-    if (item) {
+      )} WHERE user_id=${user_id}`;
+      if (item) {
+      devLog({ usedfor,retreved:item });
+    
       res.status(200).json(item);
     } else {
       next();

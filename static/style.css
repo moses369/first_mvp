@@ -27,8 +27,14 @@ a {
   display: grid;
   grid-template-rows: repeat(9, fr);
   grid-template-rows: repeat(3, fr);
+  margin: 0;
 }
-
+.content.container,
+.topbar,
+.footer,
+.shoppingList{
+   width: min(100%,100%);
+}
 .topbar {
   grid-area: 1/1/1/9;
   display: flex;
@@ -45,6 +51,11 @@ a {
 }
 
 .productResults,
+.favorites,
+.cartContainer{
+   width: min(100%,100%);
+}
+.productResults,
 .favorites {
   display: flex;
   flex-direction: row;
@@ -55,16 +66,13 @@ a {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
+  margin: 0;
 }
 
-.cart .product {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-}
+
 
 /*************** END LAYOUT ***************/
-/*************** STYLING ***************/
+/*************** STORE PRODUCT STYLING ***************/
 .fa-star {
   font-size: 1.75rem;
 }
@@ -148,4 +156,68 @@ a {
   align-self: center;
 }
 
-/*************** END STYLING ***************/
+/*************** END STORE PRODUCT STYLING ***************/
+/***************  CART PRODUCT STYLING ***************/
+.product.inCart{
+   margin: 0;
+   align-self: center;
+   display: flex;
+   flex-direction: row;
+   flex-wrap: nowrap;
+   width:90%;
+   padding:1rem;
+   align-items: center;
+   justify-content: space-between;
+   border: 1px solid var(--border-color);
+   height: min-content;
+}
+.product.inCart .info{
+   align-self: center ;
+   font-size: 1.25rem;
+}
+.product.inCart h2{
+   font-size: 1.75rem;
+   max-width: 100%;
+   text-align: center;
+}
+.product.inCart .column{
+   display: flex;
+   flex-direction: column;
+   flex-wrap: nowrap;
+   height: 100%;
+   max-width: 45%;
+}
+.product.inCart > .rm.fromCart{
+   width: fit-content;
+   height: fit-content;
+   background: transparent;
+   border: none;
+   font-size: 2rem;
+}
+.product.inCart .price{
+   font-size: 3rem;
+   font-weight: 700;
+}
+
+.product.inCart label,
+.product.inCart input[name='qty']{
+   font-size: 1.75rem;
+}
+.product.inCart input[name='qty']{
+  
+   width: 5rem;
+}
+.cartContainer .checkOut{
+display: flex;
+flex-direction: row;
+justify-content: flex-end;
+align-items: center;
+font-size: 4rem;
+}
+.cartContainer .checkOut .buyBtn{
+   font-size: 4rem;
+   border-radius: 1rem;
+   padding: .5rem;
+   margin-left: 1.5rem;
+}
+/*************** END CART PRODUCT STYLING ***************/
