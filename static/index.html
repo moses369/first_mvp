@@ -1,47 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-    <script
-      src="https://kit.fontawesome.com/25b6137a6f.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
-    <script defer src="./app.js"></script>
-    <title>Shopping List</title>
-  </head>
-  <body>
-    <nav>
-      <button class="btn cartBtn">
-        <span class="cartCount">0</span>
-        <i class="fa-solid fa-cart-shopping"></i>
-      </button>
 
-      <button class="btn favBtn"><i class="fa-solid fa-bag-shopping "></i></button>
-    </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/25b6137a6f.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script defer src="./app.js"></script>
+  <title>Shopping List</title>
+</head>
 
-    <main class="container">
+<body>
+  <div class="site container">
+    <header class="topbar">
+      <div class="title">
 
-      <div class="shoppingList">
-        <h2>Shopping List</h2>
-        <form action="" class="addToList">
-          <input type="text" autocomplete="off" name="product" />
-          <input type="submit" />
-        </form>
-        <div class="itemList"></div>
+        <h1> Shopping Lists</h1>
       </div>
+      <nav class="nav">
+        <button class="btn cartBtn">
+          <span class="cartCount">0</span>
+          <i class="fa-solid fa-cart-shopping"></i>
+        </button>
 
-      <div class="productResults">
+        <button class="btn favBtn"><i class="fa-solid fa-bag-shopping "></i></button>
+      </nav>
+    </header>
+
+    <div class="shoppingList">
+      <h2>My List</h2>
+      <form action="" class="addToList">
+        <input type="text" autocomplete="off" name="product" />
+        <input type="submit" />
+      </form>
+      <div class="itemList"></div>
+    </div>
+
+    <main class="content container">
+      <div class="resultContainer">
         <h2>Results</h2>
+        <div class="productResults">
+
+          <div class="product store" data-product_id="0001111079770" data-name="Simple" truth™="" natural="" cage=""
+            free="" large="" brown="" eggs=""
+            data-image="https://www.kroger.com/product/images/large/front/0001111079770" data-price="3.49"
+            data-size="12_ct" data-refrigerate="Keep_Refrigerated" data-fav="true" data-fav_id="1" data-item="egg">
+            <i class="fa-regular fa-star"></i>
+            <img class="image" src="https://www.kroger.com/product/images/large/front/0001111079770" alt="">
+            <h3 class="description">Simple Truth™ Natural Cage Free Large Brown Eggs</h3>
+            <div class="content">
+              <div class="left">
+                <p class="price">$3.49 </p>
+                <p class="info"> Size: 12 ct <br> <span>Keep Refrigerated</span></p>
+              </div>
+              <div class="right">
+                <form action="" class="addToCart">
+                  <div class="qty">
+                    <label for="qty">Qty</label>
+                    <input class="addToCart" type="number" name="qty" id="qty" min="1" value="1">
+                  </div>
+                  <button class="addToCart" type="submit"><i class="fa-solid fa-cart-plus"></i></button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-      
+
       <div class="cartContainer">
         <h2>Cart</h2>
         <div class="cart">
@@ -52,10 +81,15 @@
         </div>
       </div>
 
-      <div class="favorites">
+      <div class="favContainer">
         <h2>Favorites</h2>
+        <div class="favorites">
+        </div>
       </div>
-      </div>
-    </main>
-  </body>
+  </div>
+  </main>
+  <footer class="footer"></footer>
+  </div>
+</body>
+
 </html>

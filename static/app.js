@@ -21,16 +21,24 @@ async function sendReq(url, options) {
 }
 /*************** APP WIDE VARS/HELPER FUNCTIONS ***************/
 const user_id = 1;
-const $cartCount = $(".cartCount");
+const inCartClass = "fa-check";
+const outCartClass = "fa-plus";
+
+const $resultContainer = $(".resultContainer");
+
+const $favContainer = $(".favContainer");
 const $favorites = $(".favorites");
+
 const $cartContainer = $(".cartContainer");
+const $cartCount = $(".cartCount");
 const $cart = $(".cart");
 const $cartTotal = $(".cartTotal");
+
 const cart_items = "cart_items";
 const fav_products = "fav_products";
 $(window).on("load", async (e) => {
   cartNotif();
-  $favorites.hide();
+  $favContainer.hide();
   $cartContainer.hide();
   const options = {
     method: "POST",
@@ -41,6 +49,86 @@ $(window).on("load", async (e) => {
   await checkCart("", "onload");
   await checkLists();
 });
+//// OPEN/CLOSE DIVS
+function toggleDivs(useCase) {
+  if ($cartContainer.is(":visible") || $favContainer.is(":visible")) {
+    $resultContainer.hide();
+  } else {
+    $resultContainer.show();
+  }
+  switch (useCase) {
+    case "fav":
+      if ($resultContainer.is(":visible") || $favContainer.is(":visible")) {
+        $cartContainer.hide();
+      } else {
+        $cartContainer.show();
+      }
+      break;
+    case "cart":
+      if ($resultContainer.is(":visible") || $cartContainer.is(":visible")) {
+        $favContainer.hide();
+      } else {
+        $favContainer.show();
+      }
+      break;
+  }
+}
+///// END OPEN?CLOSE DIV
+///// PATCH CART PRICE
+async function patchCartprice(newTotal, newQty, productObj) {
+  const { product_id } = productObj;
+  const options = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      qty: newQty,
+      usedFor: cart_items,
+      user_id,
+      total_price: newTotal,
+    }),
+  };
+  const update = await sendReq(`/api/products/table/${product_id}`, options);
+  console.log(update);
+}
+///// END PATCH CART PRICE
+
+///// LIVE UPDDATE PRICE
+async function livePriceUpdate(e, inCart = false) {
+  if (e.target.id === "qty") {
+    const product = e.target.closest(".product");
+    const { product_id, price } = product.dataset;
+    const $input = $(
+      `.product[data-product_id = ${product_id}] input[name='qty']`
+    );
+    
+    $input.unbind("change").bind("change", async (e) => {
+      const qty = $input.val();
+      const total = price * qty;
+      $(`.product[data-product_id = ${product_id}] .price`).text(
+        `$${total.toFixed(2)}`
+      ).attr('qty',qty)
+
+      if (
+        $(`.product[data-product_id=${product_id}] .addToCart i`).hasClass(
+          inCartClass
+        )
+      )
+        await patchCartprice(total, qty, product.dataset);
+
+      if (inCart) {
+        product.dataset.qty = qty;
+        product.dataset.total_price = total;
+
+        await patchCartprice(total, qty, product.dataset);
+
+        let totalPrice = await getCartTotal();
+        totalPrice = totalPrice ? totalPrice : 0;
+        $cartTotal.text(`$${(totalPrice)}`).attr("data-total_price", totalPrice);
+      }
+    });
+  }
+}
+////// END LIVE UPDDATE PRICE
 //// GET TOTAL CART PRICE
 async function getCartTotal() {
   const total_price = await sendReq("/api/cart/total", {
@@ -59,12 +147,12 @@ function cartNotif() {
 async function checkCart(productId, useCase, mapOfIds) {
   switch (useCase) {
     case "btn":
-      let inCart = "ADD TO CART";
+      let inCart = outCartClass;
       if (
         $(`.cart`).find(`.product[data-product_id='${productId}'`).length ||
         mapOfIds.has(productId)
       )
-        inCart = "ADDED";
+        inCart = inCartClass;
       return inCart;
     case "onload":
       const count = await sendReq("/api/cart/count", {
@@ -89,12 +177,14 @@ async function getItems(usedFor) {
   const res = await sendReq("/api/products/table", {
     headers: { user_id, usedFor },
   });
-  const ids = new Map();
+  const products = new Map();
   for (let item of res) {
     const { product_id, id } = item;
-    ids.set(product_id, id);
+    products.set(product_id, item);
   }
-  return ids;
+  console.log(products);
+
+  return products;
 }
 ////  END GET ITEMS FROM A TABLE MATCHIG ID
 ////  CHECK FAV
@@ -122,7 +212,9 @@ function appendCart(
 ) {
   let temp = "";
   if (refrigerate !== "null") temp = parseSpace(true, refrigerate);
-  const total_price = price * qty;
+  let total_price = price * qty;
+  const star = fav ? "solid" : "regular";
+
   $cart.append(`
   <div class="product inCart" 
   data-product_id=${product_id} 
@@ -137,14 +229,13 @@ function appendCart(
   data-qty = ${qty}
   data-item = ${parseSpace(false, item)}
   data-total_price=${total_price}>
-    <i class="fa-regular fa-star"></i>
+    <i class="fa-${star} fa-star"></i>
     <img class="image" src="${image}" alt="">
     <h2 class="description">${name}</h2>
     <p class='info'> Size: ${parseSpace(true, size)} <br> ${temp} </p>
     <p class="price">$${total_price.toFixed(2)} </p>  
     <form action="" class='cartQty'>
       <input class="cartQty" type="number" name="qty" id="qty" min="1" value="${qty}">
-      <input class="btn cartQty" type="submit" value="Update Qty">
     </form>
     <button class="btn rm FromCart">X</button>
   </div>
@@ -230,6 +321,7 @@ $(".addToList").on("submit", async (e) => {
 $(".shoppingList .itemList").on("click", async (e) => {
   const trash = e.target.dataset.trash;
   const url = e.target.dataset.url;
+
   //  RETRIEVE ITEM
   if (url) {
     const item = url.substring(url.indexOf("=") + 1);
@@ -241,7 +333,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
       for (let product of data) {
         const { images, description, productId, items, temperature } = product;
 
-        if (!images[0].sizes[3].url) continue;
+        if (!images[0].sizes[3]) continue;
         let pImage;
         for (let img of images) {
           const { perspective, sizes } = img;
@@ -254,8 +346,11 @@ $(".shoppingList .itemList").on("click", async (e) => {
 
         const inCart = await checkCart(productId, "btn", cartMap);
         const { fav_id, fav } = checkFav(productId, favMap);
+        const star = fav ? "solid" : "regular";
+        const qty = inCart === inCartClass ? cartMap.get(productId).qty : 1;
+
         $(".productResults").append(`
-        <div class="product" 
+        <div class="product store" 
           data-product_id=${productId} 
           data-name=${description} 
           data-image=${pImage} 
@@ -265,25 +360,40 @@ $(".shoppingList .itemList").on("click", async (e) => {
           data-fav='${fav}'
           data-fav_id=${fav_id}
           data-item = ${parseSpace(false, item)}>
-            <i class="fa-regular fa-star"></i>
+            <i class="fa-${star} fa-star"></i>
             <img class="image" src="${pImage}" alt="">
             <h3 class="description">${description}</h3>
-            <p class="price">Price: $${items[0].price.regular} </p>
-            <p class='info'> Size: ${items[0].size} <br>${refrigerate}</p>
-            <form action="" class="addToCart" >
-              <label for="qty">Qty</label>
-              <input class="addToCart" type="number" name="qty" id="qty" min="1" value="1">
-              <input class="addToCart" type="submit" class="btn" value="${inCart}">
-            </form>
+            <div class='content'>
+              <div class='left'>
+                <p class="price">$${(items[0].price.regular * qty).toFixed(
+                  2
+                )} </p>
+                <p class='info'> ${
+                  items[0].size
+                } <br><span>${refrigerate}</span></p>
+              </div>
+              <div class='right'>
+                <form action="" class="addToCart" >
+                  <div class='qty'>
+                    <label for="qty">Qty</label>
+                    <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
+                  </div>
+                  <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
+                </form>
+              </div>
+            </div>
           </div>
         `);
       }
     }
     console.log(url, data);
+    $cartContainer.hide();
+    $favContainer.hide();
+    $resultContainer.show();
     // END RETRIEVE ITEM
     // RM ITEM FROM SHOPPING LIST
   } else if (trash) {
-    const item = e.target.parentElement.innerText;
+    const item = e.target.closest(".item").innerText;
 
     let cartCount = parseInt($cartCount.text());
 
@@ -293,18 +403,25 @@ $(".shoppingList .itemList").on("click", async (e) => {
       body: JSON.stringify({ item, user_id }),
     };
     const deleted = await sendReq(`/api/cart/item`, options);
-    const deletedIds = [];
+    const deletedIds = new Map();
     deleted.forEach((i) => {
-      for (const item in i) {
-        if (item === "product_id") deletedIds.push(i[item]);
-      }
+      const { product_id, total_price } = i;
+      console.log({ product_id, total_price });
+      deletedIds.set(product_id, total_price);
     });
-    for (const deletedId of deletedIds) {
+    deletedIds.forEach((price, deletedId) => {
       $(
-        `.productResults .product[data-product_id=${deletedId}] .addToCart input[type='submit']`
-      ).val("ADD TO CART");
+        `.productResults .product[data-product_id=${deletedId}] .addToCart button[type='submit'] i`
+      )
+        .removeClass(inCartClass)
+        .addClass(outCartClass);
+
+      let total = $cartTotal.attr("data-total_price");
+      $cartTotal.attr("data-total_price", `${(total -= price)}`);
+      $cartTotal.text(`$${total.toFixed(2)}`);
+
       $(`.cart .product[data-product_id=${deletedId}] `).remove();
-    }
+    });
 
     $cartCount.text(cartCount - deleted.length);
     await updateLists(item, "delete");
@@ -318,11 +435,12 @@ $(".shoppingList .itemList").on("click", async (e) => {
 /*************** SET FAVORITE ***************/
 const setFav = async (e, inContainer) => {
   if (e.target.classList.contains("fa-star")) {
-    const product = e.target.parentElement;
+    const product = e.target.closest(".product");
     let { fav } = product.dataset;
 
     product.dataset.fav = fav !== "true" ? "true" : "false";
     if (product.dataset.fav === "true") {
+      e.target.classList.replace("fa-regular", "fa-solid");
       const { cart_item_id, qty, total_price, fav, fav_id, ...favProd } =
         product.dataset;
       const addKeys = {
@@ -345,6 +463,8 @@ const setFav = async (e, inContainer) => {
 
       product.dataset.fav_id = res.id;
     } else {
+      e.target.classList.replace("fa-solid", "fa-regular");
+
       const options = {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -360,9 +480,12 @@ const setFav = async (e, inContainer) => {
 };
 /*************** END SET FAVORITE ***************/
 /*************** ADD TO CART ***************/
+
 const addItem = async (e) => {
   e.preventDefault();
-  const product = e.target.parentElement;
+  const product = e.target.closest(".product");
+  console.log(product.dataset);
+
   const { product_id, name, image, price, size, refrigerate, item } =
     product.dataset;
 
@@ -407,8 +530,10 @@ const addItem = async (e) => {
     );
 
     $(
-      `.product[data-product_id = '${product_id}'] .addToCart input[type='submit']`
-    ).val("ADDED");
+      `.product[data-product_id = '${product_id}'] .addToCart button[type='submit'] i`
+    )
+      .addClass(inCartClass)
+      .removeClass(outCartClass);
     $(`.itemList .itemLink[data-item='${item}']`).css({
       "text-decoration": "line-through",
     });
@@ -420,6 +545,7 @@ const addItem = async (e) => {
 };
 $(`.productResults`).on("click", async (e) => {
   await setFav(e);
+  await livePriceUpdate(e);
   if (e.target.classList.contains("addToCart")) {
     $(`.addToCart`)
       .unbind("submit")
@@ -430,62 +556,19 @@ $(`.productResults`).on("click", async (e) => {
 /*************** UPDATE CART ***************/
 $cart.on("click", async (e) => {
   await setFav(e);
-  // UPDATE QTY
-  if (e.target.classList.contains("cartQty")) {
-    const product = e.target.parentElement.parentElement;
-    const { product_id, price } = product.dataset;
-    const $inputQty = $(
-      `.product[data-product_id = '${product_id}'] .cartQty input[name="qty"]`
-    );
-    const oldQty = $inputQty.val();
-    $(`.cartQty`)
-      .unbind("submit")
-      .bind("submit", async (e) => {
-        e.preventDefault();
 
-        const newQty = parseInt($inputQty.val());
+  await livePriceUpdate(e, true);
 
-        if (oldQty !== newQty) {
-          const newTotal = newQty * price;
-
-          $(`.cart .product[data-product_id = '${product_id}'] .price`).text(
-            `$${newTotal.toFixed(2)}`
-          );
-
-          product.dataset.total_price = newTotal;
-          product.dataset.qty = newQty;
-
-          const options = {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              qty: newQty,
-              usedFor: cart_items,
-              user_id,
-              total_price: newTotal,
-            }),
-          };
-          const update = await sendReq(
-            `/api/products/table/${product_id}`,
-            options
-          );
-          console.log(update);
-
-          const totalPrice = await getCartTotal();
-          $cartTotal
-            .text(`$${totalPrice}`)
-            .attr("data-total_price", totalPrice);
-        }
-      });
-  }
-  // END UPDATE QTY
   // RM FROM CART
   if (e.target.classList.contains("rm", "FromCart")) {
-    const { product_id, item, cart_item_id } = e.target.parentElement.dataset;
-    e.target.parentElement.remove();
+    const { product_id, item, cart_item_id, total_price, price } =
+      e.target.closest(".product").dataset;
+    e.target.closest(".product").remove();
     $(
-      `.productResults .product[data-product_id = '${product_id}'] .addToCart input[type='submit']`
-    ).val("ADD TO CART");
+      `.productResults .product[data-product_id = '${product_id}'] .addToCart button[type='submit'] i`
+    )
+      .addClass(outCartClass)
+      .removeClass(inCartClass);
 
     if (!$(`.cart`).find(`.product[data-item='${item}`).length)
       $(`.itemList .itemLink[data-item='${item}']`).css({
@@ -497,12 +580,15 @@ $cart.on("click", async (e) => {
     $cartCount.text(cartCount);
     cartNotif();
 
+    let total = $cartTotal.attr("data-total_price");
+    $cartTotal.attr("data-total_price", `${(total -= total_price)}`);
+    $cartTotal.text(`$${total.toFixed(2)}`);
+
     const options = {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ usedFor: cart_items }),
     };
-    console.log(cart_item_id);
 
     await sendReq(`/api/products/${cart_item_id}`, options);
   }
@@ -511,8 +597,10 @@ $cart.on("click", async (e) => {
 /*************** END UPDATE CART ***************/
 /***************  GET FAVORITES ***************/
 $(`.favBtn`).on("click", async (e) => {
-  $favorites.toggle();
-  if ($favorites.is(":visible")) {
+  $favContainer.toggle();
+  toggleDivs("fav");
+  $favorites.empty();
+  if ($favContainer.is(":visible")) {
     const options = {
       method: "GET",
       headers: { user_id },
@@ -536,10 +624,14 @@ $(`.favBtn`).on("click", async (e) => {
         const cartMap = await getItems(cart_items);
 
         const inCart = await checkCart(product_id, "btn", cartMap);
+
         let temp = "";
         if (refrigerate !== "null") temp = refrigerate;
+
+        const qty = inCart === inCartClass ? cartMap.get(product_id).qty : 1;
+
         $favorites.append(`
-          <div class='product'
+          <div class='product store'
           data-product_id=${product_id} 
           data-name=${name} 
           data-image=${image} 
@@ -548,17 +640,26 @@ $(`.favBtn`).on("click", async (e) => {
           data-refrigerate=${parseSpace(false, refrigerate)}
           data-fav='true'
           data-fav_id=${fav_id}
+          data-qty=${qty}
           data-item = ${parseSpace(false, item)}>
-            <i class="fa-regular fa-star"></i>
+            <i class="fa-solid fa-star"></i>
             <img class="image" src="${image}" alt="">
             <h3 class="description">${name}</h3>
-            <p class="price">Price: $${price} </p>
-            <p class='info'> Size: ${parseSpace(true, size)} <br>${temp}</p>
-            <form action="" class="addToCart" >
-              <label for="qty">Qty</label>
-              <input class="addToCart" type="number" name="qty" id="qty" min="1" value="1">
-              <input class="addToCart" type="submit" class="btn" value="${inCart}">
-            </form>
+            <div class="content">
+              <div class="left">
+                <p class="price">$${(price * qty).toFixed(2)} </p>
+                <p class='info'> Size: ${parseSpace(true, size)} <br>${temp}</p>
+              </div>
+              <div class="right">
+                <form action="" class="addToCart" >
+                  <div class='qty'>
+                   <label for="qty">Qty</label>
+                    <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
+                  </div>
+                   <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
+                  </form>
+              </div>
+            </div>
           </div>
         `);
       }
@@ -567,6 +668,8 @@ $(`.favBtn`).on("click", async (e) => {
 });
 $favorites.on("click", async (e) => {
   await setFav(e, true);
+  await livePriceUpdate(e);
+
   if (e.target.classList.contains("addToCart")) {
     $(`.addToCart`)
       .unbind("submit")
@@ -578,8 +681,11 @@ $favorites.on("click", async (e) => {
 /*************** GET CART ***************/
 $(".cartBtn").on("click", async (e) => {
   $cartContainer.toggle();
+  toggleDivs("cart");
+  $cart.empty();
   if ($cartContainer.is(":visible")) {
-    const totalPrice = await getCartTotal();
+    let totalPrice = await getCartTotal();
+    totalPrice = totalPrice ? totalPrice : 0;
     $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
 
     const options = {

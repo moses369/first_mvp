@@ -52,7 +52,7 @@ products.route("/table").get(async (req, res, next) => {
     const { user_id, usedfor } = req.headers;
     devLog({ usedfor });
 
-    const item = await sql`SELECT id,product_id FROM ${sql(
+    const item = await sql`SELECT * FROM ${sql(
       usedfor
     )} WHERE user_id=${user_id}`;
     if (item) {
@@ -77,9 +77,9 @@ products.route("/table/:id").patch(async (req, res, next) => {
         usedFor
       )} WHERE product_id = ${id} AND user_id=${user_id}`;
       if (item) {
-        const updated = await sql`UPDATE ${sql(usedFor)} SET ${sql(
+        const updated = (await sql`UPDATE ${sql(usedFor)} SET ${sql(
           update
-        )}WHERE product_id = ${id} AND user_id=${user_id} RETURNING *`;
+        )}WHERE product_id = ${id} AND user_id=${user_id} RETURNING ${sql(update)},product_id`)[0];
         devLog({ usedFor, updated });
 
         res.status(200).json(updated);
