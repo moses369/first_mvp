@@ -370,9 +370,7 @@ function appendLists(newItem, inCart) {
   `
   );
   if (inCart)
-    $(`.item a[data-item=${parseSpace(false, newItem)}]`).css({
-      "text-decoration": "line-through",
-    });
+    $(`.item a[data-item=${parseSpace(false, newItem)}]`).addClass( "line-through")
 }
 async function checkLists() {
   const options = { headers: { user_id } };
@@ -598,9 +596,7 @@ const addItem = async (e) => {
     )
       .addClass(inCartClass)
       .removeClass(outCartClass);
-    $(`.itemList .itemLink[data-item='${item}']`).css({
-      "text-decoration": "line-through",
-    });
+    $(`.itemList .itemLink[data-item='${item}']`).addClass('line-through');
     let cartCount = parseInt($cartCount.text());
     cartCount++;
     $cartCount.text(cartCount);
@@ -635,9 +631,7 @@ $cart.on("click", async (e) => {
       .removeClass(inCartClass);
 
     if (!$(`.cart`).find(`.product[data-item='${item}`).length)
-      $(`.itemList .itemLink[data-item='${item}']`).css({
-        "text-decoration": "none",
-      });
+      $(`.itemList .itemLink[data-item='${item}']`).removeClass('line-through');
 
     let cartCount = parseInt($cartCount.text());
     cartCount--;

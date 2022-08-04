@@ -20,6 +20,7 @@ a,
 input[type="number"] {
   cursor: pointer;
 }
+
 body {
   height: 100%;
 }
@@ -407,10 +408,15 @@ color: var(--accent2-color);
   text-align: center;
   font-size: 1.75rem;
 }
-.shoppingList .addToList input:focus {
-  outline: none !important;
-  border: var(--accent1-color) !important;
+input:hover{
+  border:2px solid var(--accent1-color) !important ;
+  cursor: pointer;
 }
+ input:focus {
+  outline: none !important;
+  border: 2px solid var(--accent1-color) !important;
+}
+
 .shoppingList .addToList input {
   width: 12rem;
   padding: 0.12rem;
@@ -449,7 +455,7 @@ color: var(--accent2-color);
   justify-content: center;
   padding: .5rem;
   border-radius: .5rem;
-  background: var(--accent2-color);
+  background: rgba(0, 0, 0, .05);
   
 }
 .shoppingList .listWrap{
@@ -457,7 +463,7 @@ color: var(--accent2-color);
   width: 13rem;
 }
 .itemList > .item > a:hover {
-color: var(--main-color);
+color: var(--accent2-color);
 }
 .itemList > .item {
   display: flex;
@@ -482,7 +488,13 @@ color: var(--main-color);
   color: var(--accent1-color);
 
 }
-
+.itemList > .item > .line-through{
+  text-decoration: line-through;
+  color: var(--accent2-color);
+}
+.itemList > .item > .line-through:hover{
+  color: var(--accent1-color);
+}
 /*************** END SHOPPING LISTS STYLING ***************/
 /***************  FOOTER STYLING ***************/
 .footer {
