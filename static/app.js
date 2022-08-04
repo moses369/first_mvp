@@ -21,12 +21,13 @@ async function sendReq(url, options) {
     console.error(err);
   }
 }
+let user_id;
+
 /*************** APP WIDE VARS/HELPER FUNCTIONS ***************/
-const user_id = 1;
 const inCartClass = "fa-check";
 const outCartClass = "fa-plus";
 
-const $homeContainer = $('.homeContainer')
+const $siteContainer = $(".site.container");
 const $resultContainer = $(".resultContainer");
 
 const $favContainer = $(".favContainer");
@@ -39,9 +40,34 @@ const $cartTotal = $(".cartTotal");
 
 const cart_items = "cart_items";
 const fav_products = "fav_products";
-$(window).on("load", async (e) => {
+
+/***************  LOGIN  ***************/
+function login() {
+  $siteContainer.hide();
+
+  $(`.loginForm`)
+    .unbind("submit")
+    .bind("submit", async (e) => {
+      e.preventDefault();
+      const name = $(`.login input[name='user']`).val();
+      const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      };
+      user_id = (await sendReq("/api/users", options)).id;
+      console.log({ user_id });
+      await onLogin();
+      $(`.login input[name='user']`).val("");
+    });
+}
+login();
+async function onLogin() {
+  const { data } = await sendReq("/api/products?filter.term=fruits");
+  await appendResults(data, "fruits");
+  $(".login").hide();
+  $siteContainer.show();
   cartNotif();
-  $resultContainer.hide()
   $favContainer.hide();
   $cartContainer.hide();
   const options = {
@@ -52,7 +78,9 @@ $(window).on("load", async (e) => {
   await sendReq("/api/lists", options);
   await checkCart("", "onload");
   await checkLists();
-});
+}
+/*************** END LOGIN  ***************/
+
 //// OPEN/CLOSE DIVS
 function toggleDivs(useCase) {
   if ($cartContainer.is(":visible") || $favContainer.is(":visible")) {
@@ -76,14 +104,14 @@ function toggleDivs(useCase) {
       }
       break;
   }
-  $homeContainer.hide()
 }
-$(`.title span`).unbind('click').bind('click', e =>{
-  $cartContainer.hide()
-  $favContainer.hide()
-  $resultContainer.hide()
-  $homeContainer.show()
-})
+$(`.title span`)
+  .unbind("click")
+  .bind("click", (e) => {
+    $cartContainer.hide();
+    $favContainer.hide();
+    $resultContainer.show();
+  });
 ///// END OPEN?CLOSE DIV
 ///// PATCH CART PRICE
 async function patchCartprice(newTotal, newQty, productObj) {
@@ -112,9 +140,9 @@ async function livePriceUpdate(e, inCart = false) {
       `.product[data-product_id = ${product_id}] input[name='qty']`
     );
 
-    $input.unbind('input').bind("input", async (e) => {
-      console.log('changed');
-      
+    $input.unbind("input").bind("input", async (e) => {
+      console.log("changed");
+
       const qty = e.target.value;
       const total = price * qty;
       $(`.product[data-product_id = ${product_id}] .price`)
@@ -133,12 +161,12 @@ async function livePriceUpdate(e, inCart = false) {
         product.dataset.total_price = total;
 
         await patchCartprice(total, qty, product.dataset);
-        
+
         let totalPrice = await getCartTotal();
         totalPrice = totalPrice ? totalPrice : 0;
         $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
       }
-      console.log({total,qty,product});
+      console.log({ total, qty, product });
     });
   }
 }
@@ -244,7 +272,7 @@ function appendCart(
   data-item = ${parseSpace(false, item)}
   data-total_price=${total_price}>
     <div class="row">
-      <i class="fa-${star} fa-star"></i>
+      <i class="fa-${star} fa-star hover" ></i>
       <img class="image" src="${image}" alt="">
     </div>
     <div class="column">
@@ -263,6 +291,71 @@ function appendCart(
 `);
 }
 //// END APPEND TO CART
+//// APPEND TO RESULTS
+async function appendResults(data, item) {
+  const favMap = await getItems(fav_products);
+  const cartMap = await getItems(cart_items);
+  for (let product of data) {
+    const { images, description, productId, items, temperature } = product;
+
+    if (!images[0].sizes[3]) continue;
+    let pImage;
+    for (let img of images) {
+      const { perspective, sizes } = img;
+      if (perspective === "front") pImage = sizes[3].url;
+    }
+
+    let refrigerate = "";
+    if (temperature.indicator === "Refrigerated")
+      refrigerate = "Keep Refrigerated";
+
+    const inCart = await checkCart(productId, "btn", cartMap);
+    const { fav_id, fav } = checkFav(productId, favMap);
+    const star = fav ? "solid" : "regular";
+
+    const qty = inCart === inCartClass ? cartMap.get(productId).qty : 1;
+
+    $(".productResults").append(`
+    <div class="product store" 
+      data-product_id=${productId} 
+      data-name=${parseSpace(false, description)} 
+      data-image=${pImage} 
+      data-price=${items[0].price.regular}
+      data-size=${parseSpace(false, items[0].size)}
+      data-refrigerate= ${parseSpace(false, refrigerate)}
+      data-fav='${fav}'
+      data-fav_id=${fav_id}
+      data-item = ${parseSpace(false, item)}>
+        <i class="fa-${star} fa-star hover"></i>
+       <div class="imgWrapper"> <img class="image" src="${pImage}" alt=""></div>
+  
+          <h3 class="description">${description}</h3>
+          <div class='content'>
+            <div class='left'>
+              <p class="price">$${(items[0].price.regular * qty).toFixed(
+                2
+              )} </p>
+              <p class='info'> ${
+                items[0].size
+              } <br><span>${refrigerate}</span></p>
+            </div>
+            <div class='right'>
+              <form action="" class="addToCart" >
+                <div class='qty'>
+                  <label for="qty">Qty</label>
+                  <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
+                </div>
+                <button class="addToCart hover" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
+              </form>
+            </div>
+          </div>
+       
+      </div>
+    `);
+  }
+}
+////END  APPEND TO RESULTS
+
 //// APPEND/CHECK ITEM TO LISTS
 function appendLists(newItem, inCart) {
   $(`.itemList`).append(
@@ -346,76 +439,18 @@ $(".shoppingList .itemList").on("click", async (e) => {
   if (url) {
     const item = url.substring(url.indexOf("=") + 1);
     const { data } = await sendReq(url);
-    const favMap = await getItems(fav_products);
-    const cartMap = await getItems(cart_items);
+
     $(".productResults").empty();
     if (data) {
       $(`.resultContainer  h2`)
         .text(`Items Matching: ${item}`)
         .css({ "text-transform": "capitalize" });
-      for (let product of data) {
-        const { images, description, productId, items, temperature } = product;
-
-        if (!images[0].sizes[3]) continue;
-        let pImage;
-        for (let img of images) {
-          const { perspective, sizes } = img;
-          if (perspective === "front") pImage = sizes[3].url;
-        }
-
-        let refrigerate = "";
-        if (temperature.indicator === "Refrigerated")
-          refrigerate = "Keep Refrigerated";
-
-        const inCart = await checkCart(productId, "btn", cartMap);
-        const { fav_id, fav } = checkFav(productId, favMap);
-        const star = fav ? "solid" : "regular";
-
-        const qty = inCart === inCartClass ? cartMap.get(productId).qty : 1;
-
-        $(".productResults").append(`
-        <div class="product store" 
-          data-product_id=${productId} 
-          data-name=${parseSpace(false, description)} 
-          data-image=${pImage} 
-          data-price=${items[0].price.regular}
-          data-size=${parseSpace(false, items[0].size)}
-          data-refrigerate= ${parseSpace(false, refrigerate)}
-          data-fav='${fav}'
-          data-fav_id=${fav_id}
-          data-item = ${parseSpace(false, item)}>
-            <i class="fa-${star} fa-star"></i>
-           <div class="imgWrapper"> <img class="image" src="${pImage}" alt=""></div>
-      
-              <h3 class="description">${description}</h3>
-              <div class='content'>
-                <div class='left'>
-                  <p class="price">$${(items[0].price.regular * qty).toFixed(
-                    2
-                  )} </p>
-                  <p class='info'> ${
-                    items[0].size
-                  } <br><span>${refrigerate}</span></p>
-                </div>
-                <div class='right'>
-                  <form action="" class="addToCart" >
-                    <div class='qty'>
-                      <label for="qty">Qty</label>
-                      <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
-                    </div>
-                    <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
-                  </form>
-                </div>
-              </div>
-           
-          </div>
-        `);
-      }
+      await appendResults(data, item);
     }
     console.log({ url, data }, ` line 413`);
     $cartContainer.hide();
     $favContainer.hide();
-    $homeContainer.hide()
+
     $resultContainer.show();
     // END RETRIEVE ITEM
     // RM ITEM FROM SHOPPING LIST
@@ -669,14 +704,17 @@ $(`.favBtn`).on("click", async (e) => {
           data-fav_id=${fav_id}
           data-qty=${qty}
           data-item = ${parseSpace(false, item)}>
-            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star hover"></i>
             <div class="imgWrapper"> <img class="image" src="${image}" alt=""> </div>
         
               <h3 class="description">${parseSpace(true, name)}</h3>
               <div class="content">
                 <div class="left">
                   <p class="price">$${(price * qty).toFixed(2)} </p>
-                  <p class='info'> Size: ${parseSpace(true, size)} <br>${temp}</p>
+                  <p class='info'> Size: ${parseSpace(
+                    true,
+                    size
+                  )} <br>${temp}</p>
                 </div>
                 <div class="right">
                   <form action="" class="addToCart" >
@@ -684,7 +722,7 @@ $(`.favBtn`).on("click", async (e) => {
                     <label for="qty">Qty</label>
                       <input class="addToCart" type="number" name="qty" id="qty" min="1" value="${qty}">
                     </div>
-                    <button class="addToCart" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
+                    <button class="addToCart hover" type="submit"><i class="fa-solid ${inCart} addToCart"></i></button>
                     </form>
                 </div>
               </div>

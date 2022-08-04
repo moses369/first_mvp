@@ -4,14 +4,11 @@ DROP TABLE IF EXISTS fav_products,users,orders,products,cart,lists,cart_items;
 
 CREATE TABLE users (
    id SERIAL PRIMARY KEY,
-   name TEXT NOT NULL,
-   email TEXT NOT NULL,
-   phone character(10),
-   address TEXT 
+   name TEXT 
 );
 INSERT INTO users 
-   (name, email,phone, address) VALUES
-   ('Moses', 'moses@email.com', null,'8th st. WhereYouAt' );
+   (name) VALUES
+   ('Moses');
 
 
 CREATE TABLE products (

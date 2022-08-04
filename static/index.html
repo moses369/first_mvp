@@ -14,10 +14,22 @@
 </head>
 
 <body>
+  <div class="login">
+    <div class="loginWrapper">
+      <div class="contentLogin">
+        <h2>Login</h2>
+        <form action="" class="loginForm">
+          <label for="user">User Name</label>
+          <input type="text" for="user" name="user" required>
+          <button type="submit">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
   <div class="site container">
 
     <header class="topbar">
-      <div class="title">
+      <div class="title hover">
 
         <span>
           <h1> Shopping Lists</h1>
@@ -27,10 +39,10 @@
         <div class="icons">
           <button class="btn cartBtn">
             <span class="cartCount">0</span>
-            <i class="fa-solid fa-cart-shopping"></i>
+            <i class="fa-solid fa-cart-shopping hover"></i>
           </button>
 
-          <button class="btn favBtn"><i class="fa-solid fa-star "></i></button>
+          <button class="btn favBtn hover"><i class="fa-solid fa-star "></i></button>
 
         </div>
       </nav>
@@ -41,7 +53,7 @@
       <div class="formWrap">
         <form action="" class="addToList">
           <input type="text" autocomplete="off" name="product" placeholder="Add Items" />
-          <button type="submit"><i class="fa-solid fa-plus addToCart"></i></button>
+          <button type="submit" class="hover"><i class="fa-solid fa-plus addToCart"></i></button>
         </form>
 
       </div>
@@ -52,30 +64,9 @@
     </div>
 
     <main class="content container">
-      <div class="homeContainer">
-        <h2 class="containerTitle">Welcome ${UserName}!</h2>
-        <h3 class="tutorialTitle">Tutorial</h3>
-        <div class="tutorial">
-          <div class="listsTutorial">
-            <h4>Create a List</h4>
-
-            <img src="img/listTutorial.jpg" alt="">
-            <p>Create your shopping list and then click the word to find related products. Once an item is added to your
-              cart it will be crossed out.</p>
-
-          </div>
-          <div class="qtyTutorial">
-            <h4>Update Cart Quanity</h4>
-
-            <img src="img/qtyTutorial.jpg" alt="">
-            <p>Once added to your cart you can change the quanity anywhere. </p>
-          </div>
-
-        </div>
-      </div>
 
       <div class="resultContainer">
-        <h2 class="containerTitle">Results</h2>
+        <h2 class="containerTitle">Add Items to Your List and Shop</h2>
         <div class="productResults">
         </div>
       </div>
@@ -86,7 +77,7 @@
         </div>
         <div class="checkOut">
           <h3 class="cartTotal" data-total_price="0.00">Total: $0.00</h3>
-          <button class="btn buyBtn">Check Out</button>
+          <button class="btn buyBtn hover">Check Out</button>
         </div>
       </div>
 

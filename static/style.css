@@ -1,15 +1,18 @@
 /*************** GENERAL TAG STYLING ***************/
 :root {
-  --font-color: aliceblue;
-  --link-color: black;
+  --font-color: #fff;
   --border-color: rgba(0, 0, 0, 0.2);
-  --main-color: rgb(53,94,59);
+  --main-color: #336600;
+  --accent1-color:#f3b800;
+  --accent2-color: #fff;
   --button-border: 1px solid var(--border-color);
+  --focus-border-color: #336600;
 }
 * {
   box-sizing: border-box;
   letter-spacing: 0.5px;
-  
+  font-family: Arial, Helvetica, sans-serif;
+
 }
 button,
 a,
@@ -30,6 +33,10 @@ h4 {
 
 a {
   text-decoration: none;
+}
+
+h1:hover{
+color: var(--accent2-color);
 }
 
 /*************** END GENERAL TAG STYLING ***************/
@@ -56,15 +63,21 @@ a {
 
 .topbar {
   grid-area: 1/1/1/9;
+  background: var(--main-color);
+  color: var(--accent1-color);
 }
 .shoppingList {
   grid-area: 2/1/3/2;
+  color: var(--font-color);
 }
 .content.container {
   grid-area: 2/2/3/9;
+  background: var(--accent2-color);
 }
 .footer {
   grid-area: 3/1/3/9;
+  background: var(--main-color);
+  color: var(--font-color);
 }
 
 .productResults,
@@ -82,13 +95,18 @@ a {
   justify-content: center;
   padding: 1rem 2rem;
 }
-
+.cartContainer,
+.productResults,
+.favorites{
+  background: var(--accent2-color);
+}
 /*************** END LAYOUT ***************/
 /***************  CONTAINER TITLES ***************/
 /*************** END CONTAINER TITLES ***************/
 .containerTitle {
   padding-left: 4rem;
   font-size: 2rem;
+  color: var(--main-color);
 }
 .favContainer > h2 {
   padding-left: 1rem;
@@ -96,9 +114,14 @@ a {
 /*************** STORE PRODUCT STYLING ***************/
 .product.store .fa-star {
   font-size: 1.75rem;
-  color: var(--font-color);
+  color: var(--accent1-color);
   margin-bottom: .25rem;
   padding-left: .5rem;
+  cursor: pointer;
+
+}
+.product.store .fa-star:hover{
+  color: var(--accent2-color);
 }
 .image {
   width: 12rem;
@@ -195,8 +218,17 @@ a {
   align-items: center;
   align-self: center;
   border: var(--button-border);
+  background: var(--accent1-color);
+  color: var(--font-color);
 }
+.addToCart button[type="submit"]:hover{
+  background: var(--accent2-color);
+  color: var(--main-color);
 
+}
+.product.store .addToCart .fa-check{
+  cursor: default;
+}
 /*************** END STORE PRODUCT STYLING ***************/
 /***************  CART PRODUCT STYLING ***************/
 .product.inCart {
@@ -211,6 +243,16 @@ a {
   justify-content: space-between;
   border: 1px solid var(--border-color);
   height: min(14rem, 14rem);
+  background: var(--main-color);
+  color: var(--font-color);
+}
+.product.inCart .fa-star {
+  font-size: 2rem;
+  color: var(--accent1-color);
+  cursor: pointer;
+}
+.product.inCart .fa-star:hover {
+  color: var(--accent2-color);
 }
 .product.inCart .info {
   align-self: center;
@@ -234,6 +276,7 @@ a {
   background: transparent;
   border: none;
   font-size: 1.5rem;
+  color: red;
 }
 .product.inCart .price {
   font-size: 2rem;
@@ -254,11 +297,18 @@ a {
   align-items: center;
   font-size: 2.3rem;
 }
+.cartContainer .checkOut .buyBtn:hover {
+  background: var(--main-color);
+  color: var(--accent2-color);
+}
 .cartContainer .checkOut .buyBtn {
   font-size: 1.75rem;
   border-radius: 1rem;
   padding: 0.5rem;
   margin-left: 1.5rem;
+  background: var(--accent1-color);
+  color: var(--font-color);
+  border: var(--button-border);
 }
 .product.inCart .row {
   display: flex;
@@ -268,6 +318,9 @@ a {
   max-width: 25%;
   justify-content: space-between;
   align-items: center;
+}
+.cartTotal{
+  color: var(--main-color);
 }
 /*************** END CART PRODUCT STYLING ***************/
 /***************  NAV BAR STYLING ***************/
@@ -316,7 +369,12 @@ a {
   position: absolute;
   bottom: 0.75rem;
 }
-
+.topbar .nav .icons i{
+  color: var(--accent1-color);
+}
+.topbar .nav .icons i:hover{
+  color: var(--accent2-color);
+}
 .cartBtn > span {
   position: absolute;
   font-size: 1.1rem;
@@ -325,7 +383,7 @@ a {
   border: 1px solid red;
   width: 1.5rem;
   border-radius: 50%;
-  color: aliceblue;
+  color: var(--font-color);
   background: red;
 }
 .nav .btn {
@@ -349,6 +407,10 @@ a {
   text-align: center;
   font-size: 1.75rem;
 }
+.shoppingList .addToList input:focus {
+  outline: none !important;
+  border: var(--accent1-color) !important;
+}
 .shoppingList .addToList input {
   width: 12rem;
   padding: 0.12rem;
@@ -359,6 +421,10 @@ a {
   margin-right: 0.5rem;
   margin-bottom: 1.5rem;
 }
+.shoppingList .addToList button:hover {
+  background: var(--accent2-color);
+  color: var(--main-color);
+}
 .shoppingList .addToList button {
   border-radius: 50%;
   width: 2rem;
@@ -367,6 +433,8 @@ a {
   padding: 0.2rem;
   text-align: center;
   border: var(--button-border);
+  background: var(--accent1-color);
+  color: var(--font-color);
 }
 .shoppingList .formWrap {
   display: flex;
@@ -381,12 +449,15 @@ a {
   justify-content: center;
   padding: .5rem;
   border-radius: .5rem;
-  background: var(--font-color);
+  background: var(--accent2-color);
   
 }
 .shoppingList .listWrap{
   align-self: center;
   width: 13rem;
+}
+.itemList > .item > a:hover {
+color: var(--main-color);
 }
 .itemList > .item {
   display: flex;
@@ -396,15 +467,20 @@ a {
   align-items: center;
   text-align: center;
   margin-bottom: 0.5rem;
+  color: var(--accent1-color);
 }
 
 .itemList > .item > button {
   background: transparent;
   border: none;
+  color: red;
 }
+
 .itemList > .item > a {
   font-size: 1.5rem;
   text-transform: capitalize;
+  color: var(--accent1-color);
+
 }
 
 /*************** END SHOPPING LISTS STYLING ***************/
@@ -416,47 +492,71 @@ a {
   border-top: 1px solid var(--border-color);
 }
 /*************** END FOOTER STYLING ***************/
-/***************  TUTORIAL STYLING ***************/
-.homeContainer {
+
+/***************  LOGIN STYLING ***************/
+.login{
+  margin: -2rem;
+  padding: 5rem;
+  width: 100%;
+  height: 100vh;
+  background: #336600;
+  color: #336600;
+  font-size: 1.2rem;
+}
+.loginWrapper{
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  padding-top: 10%;
+}
+.contentLogin{
+  padding: 2rem;
+  padding-top: 3rem;
+  border: 1px solid var(--border-color);
+  border-radius:1rem ;
+  height: 25rem;
+  width: 20rem;
+  text-align: center;
+  background:#C0C0C0;
+}
+.loginForm{
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.tutorialTitle {
-  text-align: center;
-  font-size: 1.75rem;
-}
-.homeContainer .tutorial {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-}
-.homeContainer .tutorial h4 {
-  font-size: 1.25rem;
-  height: 2rem;
-  margin: 0;
+.loginForm button{
+font-size: 1.5rem;
+background-color: #f3b800;
+color: black;
+padding: .75rem;
+border-radius: .75rem;
+width: fit-content;
+align-self: center;
+border: var(--button-border);
 
 }
-
-.homeContainer .tutorial img {
-  width: 20rem;
-  height: 20rem;
-  object-fit: contain;
-  margin-bottom: .75rem;
-  border-bottom: 1px solid var(--border-color);
+.loginForm button:hover{
+  background: var(--main-color);
+  color: var(--font-color);
 }
-.homeContainer .tutorial > div {
-  width: min-content
-
+.loginForm input{
+  margin-top: .4rem;
+margin-bottom:2rem ;
+font-size: 1.5rem;
+border-radius: .5rem;
+padding: .3rem;
+padding-left: 1rem;
+border:1px solid var(--border-color);
+background: rgba(90, 84, 84, 0.2);
+color:#336600;
 }
-.homeContainer .tutorial .listsTutorial img {
-  width: 15rem;
-  height: 15rem;
-  object-fit: contain;
-
+.loginForm input:hover{
+  border: 1px solid  #336600 !important;
 }
-.homeContainer .tutorial >div >p{
-  line-height:1.12rem;
+.loginForm input:focus{
+  outline: none !important;
+  border: 1px solid  #336600 !important;
 }
-
-/*************** END TUTORIAL STYLING ***************/
+/*************** END LOGIN STYLING ***************/

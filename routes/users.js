@@ -2,13 +2,23 @@ import express from "express";
 import dotenv from "dotenv";
 import sql from "../database/db.js";
 dotenv.config();
-const { API_TOKEN } = process.env;
+const { NODE_ENV } = process.env;
+const devLog = (obj) => (NODE_ENV !== "production" ? console.log(obj) : null);
 const users = express.Router();
 
 users
   .route("/")
   .post(async (req, res, next) => {
     try {
+      const {name} = req.body
+      const user_id = (await sql`SELECT id FROM users WHERE name = ${name}`)[0]
+      if(user_id){
+        res.json(user_id)
+      }else{
+        const newUser = (await sql`INSERT INTO users (name) VALUES (${name}) RETURNING *`)[0]
+        devLog({newUser})
+        res.sendStatus(201)
+      }
     } catch (err) {
       next(err);
     }
