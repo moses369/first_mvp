@@ -576,7 +576,11 @@ input:focus {
   justify-content: center;
   align-self: center;
 }
-.pageBtn:hover,
+.pageBtn:hover
+.active {
+  color: var(--accent2-color);
+  background: var(--main-color);
+}
 .active {
   color: var(--accent2-color);
   background: var(--main-color);
