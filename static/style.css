@@ -607,5 +607,7 @@ input:focus {
 }
  .dot.pageBtn:hover{
   cursor: default;
+  color: var(--main-color) !important;
+  background: var(--accent1-color) !important;
 }
 /*************** END PAGINATION STYLING ***************/
