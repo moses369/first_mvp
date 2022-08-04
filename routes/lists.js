@@ -51,7 +51,7 @@ lists
             SET  items = 
               CASE 
                 WHEN items IS NULL THEN ${items}
-                ELSE (SELECT items FROM lists) || ${items}
+                ELSE (SELECT items FROM lists WHERE user_id = ${user_id}) || ${items}
               END
               WHERE user_id = ${user_id} RETURNING *`
           )[0];
