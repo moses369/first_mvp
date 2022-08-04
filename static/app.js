@@ -743,6 +743,10 @@ $favorites.on("click", async (e) => {
 /*************** END GET FAVORITES ***************/
 /*************** GET CART ***************/
 $(".cartBtn").on("click", async (e) => {
+ await openCart()
+});
+/*************** END GET CART ***************/
+async function openCart(){
   $cartContainer.toggle();
   toggleDivs("cart");
   $cart.empty();
@@ -792,6 +796,5 @@ $(".cartBtn").on("click", async (e) => {
       }
     }
   }
-});
-/*************** END GET CART ***************/
+}
 // TO DO ADD CHECKOUT BUTN FOR CART, ADD TOTAL PRICE INDICATOR OF CART WITH DATASET OF CART PRICE AND THEN STYLING
