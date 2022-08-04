@@ -227,9 +227,7 @@ color: var(--accent2-color);
   color: var(--main-color);
 
 }
-.product.store .addToCart .fa-check{
-  cursor: default;
-}
+
 /*************** END STORE PRODUCT STYLING ***************/
 /***************  CART PRODUCT STYLING ***************/
 .product.inCart {
@@ -271,6 +269,9 @@ color: var(--accent2-color);
   height: 100%;
   max-width: 45%;
 }
+.product.inCart .row .rm.fromCart:hover{
+color: var(--accent2-color);
+} 
 .product.inCart .row .rm.fromCart {
   width: fit-content;
   height: fit-content;
@@ -476,6 +477,9 @@ color: var(--accent2-color);
   color: var(--accent1-color);
 }
 
+.itemList > .item > button:hover {
+  color: var(--accent2-color);
+} 
 .itemList > .item > button {
   background: transparent;
   border: none;

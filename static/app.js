@@ -187,6 +187,7 @@ function cartNotif() {
   parseInt($cartCount.text()) !== 0 ? $cartCount.show() : $cartCount.hide();
 }
 //// END END CART NOTIFICATION
+
 ////  CHECK CART
 async function checkCart(productId, useCase, mapOfIds) {
   switch (useCase) {
@@ -216,6 +217,7 @@ async function checkCart(productId, useCase, mapOfIds) {
   }
 }
 //// END CHECK CART
+
 ////  GET ITEMS FROM A TABLE MATCHIG ID
 async function getItems(usedFor) {
   const res = await sendReq("/api/products/table", {
@@ -230,6 +232,7 @@ async function getItems(usedFor) {
   return products;
 }
 ////  END GET ITEMS FROM A TABLE MATCHIG ID
+
 ////  CHECK FAV
 function checkFav(productId, mapOfIds) {
   const fav = mapOfIds.has(productId);
@@ -293,6 +296,7 @@ function appendCart(
 `);
 }
 //// END APPEND TO CART
+
 //// APPEND TO RESULTS
 async function appendResults(data, item) {
   const favMap = await getItems(fav_products);
@@ -372,7 +376,9 @@ function appendLists(newItem, inCart) {
   `
   );
   if (inCart)
-    $(`.item a[data-item=${parseSpace(false, newItem)}]`).addClass( "line-through")
+    $(`.item a[data-item=${parseSpace(false, newItem)}]`).addClass(
+      "line-through"
+    );
 }
 async function checkLists() {
   const options = { headers: { user_id } };
@@ -396,6 +402,7 @@ async function checkLists() {
   }
 }
 ////END APPEND/CHECK LISTS
+
 //// PARSE STRING BEFORE/AFTER POST
 function parseSpace(addSpaces, string) {
   if (string === "") return "null";
@@ -404,6 +411,7 @@ function parseSpace(addSpaces, string) {
   return addSpaces ? res : req;
 }
 ////END PARSE STRING BEFORE/AFTER POST
+
 //// UPDATE LIST TABLE
 async function updateLists(item, method) {
   const sendObj = {
@@ -420,7 +428,6 @@ async function updateLists(item, method) {
 }
 ////END UPDATE LIST TABLE
 
-
 /*************** END APP WIDE VARS/HELPER FUNCTIONS  ***************/
 
 /*************** ADD ITEMS TO SHOPPING LIST ***************/
@@ -432,6 +439,7 @@ $(".addToList").on("submit", async (e) => {
   $(`.addToList input[name='product']`).val("");
 });
 /*************** END ADD ITEMS TO SHOPPING LIST ***************/
+
 /*************** SHOPPLING LIST ITEM INTERACTION ***************/
 $(".shoppingList .itemList").on("click", async (e) => {
   const trash = e.target.dataset.trash;
@@ -455,6 +463,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
 
     $resultContainer.show();
     // END RETRIEVE ITEM
+
     // RM ITEM FROM SHOPPING LIST
   } else if (trash) {
     const item = e.target.closest(".item").innerText.toLowerCase();
@@ -543,66 +552,74 @@ const setFav = async (e, inContainer) => {
   }
 };
 /*************** END SET FAVORITE ***************/
-/*************** ADD TO CART ***************/
 
+/*************** ADD TO CART ***************/
 const addItem = async (e) => {
   e.preventDefault();
   const product = e.target.closest(".product");
   console.log(product.dataset, " line 500");
-
+  
   const { product_id, name, image, price, size, refrigerate, item } =
     product.dataset;
-
-  const qty = $(
-    `.product[data-product_id = '${product_id}'] .addToCart input[name='qty'] `
-  ).val();
-
-  if (!$cart.find(`.product[data-product_id='${product_id}'`).length) {
-    const { fav, fav_id, ...cartItem } = product.dataset;
-    const addKeys = {
-      order_count: 1,
-      user_id,
-      qty,
-      total_price: price * qty,
-    };
-
-    const sentItem = { ...cartItem, ...addKeys };
-
-    sentItem.item = parseSpace(true, sentItem.item);
-    sentItem.refrigerate = parseSpace(true, sentItem.refrigerate);
-
-    const options = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(sentItem),
-    };
-    const res = await sendReq("api/cart/item", options);
-    const cart_item_id = res[0].id;
-
-    appendCart(
-      product_id,
-      name,
-      image,
-      price,
-      size,
-      refrigerate,
-      cart_item_id,
-      fav,
-      fav_id,
-      qty,
-      item
-    );
-
+  if (
     $(
       `.product[data-product_id = '${product_id}'] .addToCart button[type='submit'] i`
-    )
-      .addClass(inCartClass)
-      .removeClass(outCartClass);
-    $(`.itemList .itemLink[data-item='${item}']`).addClass('line-through');
-    let cartCount = parseInt($cartCount.text());
-    cartCount++;
-    $cartCount.text(cartCount);
-    cartNotif();
+    ).hasClass(inCartClass)
+  ) {
+    await openCart(e);
+  } else {
+
+    const qty = $(
+      `.product[data-product_id = '${product_id}'] .addToCart input[name='qty'] `
+    ).val();
+
+    if (!$cart.find(`.product[data-product_id='${product_id}'`).length) {
+      const { fav, fav_id, ...cartItem } = product.dataset;
+      const addKeys = {
+        order_count: 1,
+        user_id,
+        qty,
+        total_price: price * qty,
+      };
+
+      const sentItem = { ...cartItem, ...addKeys };
+
+      sentItem.item = parseSpace(true, sentItem.item);
+      sentItem.refrigerate = parseSpace(true, sentItem.refrigerate);
+
+      const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sentItem),
+      };
+      const res = await sendReq("api/cart/item", options);
+      const cart_item_id = res[0].id;
+
+      appendCart(
+        product_id,
+        name,
+        image,
+        price,
+        size,
+        refrigerate,
+        cart_item_id,
+        fav,
+        fav_id,
+        qty,
+        item
+      );
+
+      $(
+        `.product[data-product_id = '${product_id}'] .addToCart button[type='submit'] i`
+      )
+        .addClass(inCartClass)
+        .removeClass(outCartClass);
+      $(`.itemList .itemLink[data-item='${item}']`).addClass("line-through");
+      let cartCount = parseInt($cartCount.text());
+      cartCount++;
+      $cartCount.text(cartCount);
+      cartNotif();
+    }
   }
 };
 $(`.productResults`).on("click", async (e) => {
@@ -615,6 +632,7 @@ $(`.productResults`).on("click", async (e) => {
   }
   /*************** END ADD TO CART ***************/
 });
+
 /*************** UPDATE CART ***************/
 $cart.on("click", async (e) => {
   await setFav(e);
@@ -633,7 +651,7 @@ $cart.on("click", async (e) => {
       .removeClass(inCartClass);
 
     if (!$(`.cart`).find(`.product[data-item='${item}`).length)
-      $(`.itemList .itemLink[data-item='${item}']`).removeClass('line-through');
+      $(`.itemList .itemLink[data-item='${item}']`).removeClass("line-through");
 
     let cartCount = parseInt($cartCount.text());
     cartCount--;
@@ -655,6 +673,7 @@ $cart.on("click", async (e) => {
   // END RM FROM CART
 });
 /*************** END UPDATE CART ***************/
+
 /***************  GET FAVORITES ***************/
 $(`.favBtn`).on("click", async (e) => {
   $favContainer.toggle();
@@ -741,62 +760,62 @@ $favorites.on("click", async (e) => {
       .bind("submit", async (e) => await addItem(e));
   }
 });
-
 /*************** END GET FAVORITES ***************/
+
 /*************** GET CART ***************/
 $(".cartBtn").on("click", async (e) => {
- });
- 
- /*************** END GET CART ***************/
- async function openCart(){
-   $cartContainer.toggle();
-   toggleDivs("cart");
-   $cart.empty();
-   if ($cartContainer.is(":visible")) {
-     let totalPrice = await getCartTotal();
-     totalPrice = totalPrice ? totalPrice : 0;
-     $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
- 
-     const options = {
-       method: "GET",
-       headers: { user_id },
-     };
-     const res = await sendReq("/api/cart", options);
- 
-     for (const product of res) {
-       const favMap = await getItems(fav_products);
-       const favObj = checkFav(product.product_id, favMap);
-       const cartItem = { ...product, ...favObj };
-       const {
-         product_id,
-         name,
-         image,
-         price,
-         size,
-         refrigerate,
-         item,
-         fav_id,
-         cart_item_id,
-         fav,
-         qty,
-       } = cartItem;
- 
-       if (!$cart.find(`.product[data-product_id='${product_id}'`).length) {
-         appendCart(
-           product_id,
-           name,
-           image,
-           price,
-           size,
-           refrigerate,
-           cart_item_id,
-           fav,
-           fav_id,
-           qty,
-           item
-         );
-       }
-     }
-   }
- }
+  await openCart();
+});
+/*************** END GET CART ***************/
+async function openCart() {
+  $cartContainer.toggle();
+  toggleDivs("cart");
+  $cart.empty();
+  if ($cartContainer.is(":visible")) {
+    let totalPrice = await getCartTotal();
+    totalPrice = totalPrice ? totalPrice : 0;
+    $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
+
+    const options = {
+      method: "GET",
+      headers: { user_id },
+    };
+    const res = await sendReq("/api/cart", options);
+
+    for (const product of res) {
+      const favMap = await getItems(fav_products);
+      const favObj = checkFav(product.product_id, favMap);
+      const cartItem = { ...product, ...favObj };
+      const {
+        product_id,
+        name,
+        image,
+        price,
+        size,
+        refrigerate,
+        item,
+        fav_id,
+        cart_item_id,
+        fav,
+        qty,
+      } = cartItem;
+
+      if (!$cart.find(`.product[data-product_id='${product_id}'`).length) {
+        appendCart(
+          product_id,
+          name,
+          image,
+          price,
+          size,
+          refrigerate,
+          cart_item_id,
+          fav,
+          fav_id,
+          qty,
+          item
+        );
+      }
+    }
+  }
+}
 // TO DO ADD CHECKOUT BUTN FOR CART, ADD TOTAL PRICE INDICATOR OF CART WITH DATASET OF CART PRICE AND THEN STYLING
