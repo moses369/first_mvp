@@ -576,7 +576,8 @@ input:focus {
   justify-content: center;
   align-self: center;
 }
-.pageBtn:hover {
+.pageBtn:hover,
+.active {
   color: var(--accent2-color);
   background: var(--main-color);
 }
@@ -591,6 +592,7 @@ input:focus {
   background: var(--accent1-color);
   margin-right: 0.75rem;
   border: var(--button-border);
+  cursor: pointer;
 }
 .pageBtn.next{
   width: 4rem !important;
@@ -603,8 +605,7 @@ input:focus {
   border-bottom-right-radius: .5rem;
   border-top-right-radius: .5rem;
 }
-.active {
-  color: var(--accent2-color);
-  background: var(--main-color);
+ .dot.pageBtn:hover{
+  cursor: default;
 }
 /*************** END PAGINATION STYLING ***************/
