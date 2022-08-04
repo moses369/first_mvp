@@ -21,9 +21,10 @@ async function sendReq(url, options) {
     console.error(err);
   }
 }
-let user_id;
 
 /*************** APP WIDE VARS/HELPER FUNCTIONS ***************/
+let user_id;
+
 const inCartClass = "fa-check";
 const outCartClass = "fa-plus";
 
@@ -113,6 +114,7 @@ $(`.title span`)
     $resultContainer.show();
   });
 ///// END OPEN?CLOSE DIV
+
 ///// PATCH CART PRICE
 async function patchCartprice(newTotal, newQty, productObj) {
   const { product_id } = productObj;
@@ -171,6 +173,7 @@ async function livePriceUpdate(e, inCart = false) {
   }
 }
 ////// END LIVE UPDDATE PRICE
+
 //// GET TOTAL CART PRICE
 async function getCartTotal() {
   const total_price = await sendReq("/api/cart/total", {
@@ -185,6 +188,7 @@ function cartNotif() {
   parseInt($cartCount.text()) !== 0 ? $cartCount.show() : $cartCount.hide();
 }
 //// END END CART NOTIFICATION
+
 ////  CHECK CART
 async function checkCart(productId, useCase, mapOfIds) {
   switch (useCase) {
@@ -214,6 +218,7 @@ async function checkCart(productId, useCase, mapOfIds) {
   }
 }
 //// END CHECK CART
+
 ////  GET ITEMS FROM A TABLE MATCHIG ID
 async function getItems(usedFor) {
   const res = await sendReq("/api/products/table", {
@@ -228,6 +233,7 @@ async function getItems(usedFor) {
   return products;
 }
 ////  END GET ITEMS FROM A TABLE MATCHIG ID
+
 ////  CHECK FAV
 function checkFav(productId, mapOfIds) {
   const fav = mapOfIds.has(productId);
@@ -291,6 +297,7 @@ function appendCart(
 `);
 }
 //// END APPEND TO CART
+
 //// APPEND TO RESULTS
 async function appendResults(data, item) {
   const favMap = await getItems(fav_products);
@@ -394,6 +401,7 @@ async function checkLists() {
   }
 }
 ////END APPEND/CHECK LISTS
+
 //// PARSE STRING BEFORE/AFTER POST
 function parseSpace(addSpaces, string) {
   if (string === "") return "null";
@@ -402,6 +410,7 @@ function parseSpace(addSpaces, string) {
   return addSpaces ? res : req;
 }
 ////END PARSE STRING BEFORE/AFTER POST
+
 //// UPDATE LIST TABLE
 async function updateLists(item, method) {
   const sendObj = {
@@ -418,7 +427,6 @@ async function updateLists(item, method) {
 }
 ////END UPDATE LIST TABLE
 
-
 /*************** END APP WIDE VARS/HELPER FUNCTIONS  ***************/
 
 /*************** ADD ITEMS TO SHOPPING LIST ***************/
@@ -430,6 +438,7 @@ $(".addToList").on("submit", async (e) => {
   $(`.addToList input[name='product']`).val("");
 });
 /*************** END ADD ITEMS TO SHOPPING LIST ***************/
+
 /*************** SHOPPLING LIST ITEM INTERACTION ***************/
 $(".shoppingList .itemList").on("click", async (e) => {
   const trash = e.target.dataset.trash;
@@ -453,6 +462,7 @@ $(".shoppingList .itemList").on("click", async (e) => {
 
     $resultContainer.show();
     // END RETRIEVE ITEM
+
     // RM ITEM FROM SHOPPING LIST
   } else if (trash) {
     const item = e.target.closest(".item").innerText.toLowerCase();
@@ -541,6 +551,7 @@ const setFav = async (e, inContainer) => {
   }
 };
 /*************** END SET FAVORITE ***************/
+
 /*************** ADD TO CART ***************/
 
 const addItem = async (e) => {
@@ -613,6 +624,7 @@ $(`.productResults`).on("click", async (e) => {
   }
   /*************** END ADD TO CART ***************/
 });
+
 /*************** UPDATE CART ***************/
 $cart.on("click", async (e) => {
   await setFav(e);
@@ -653,6 +665,7 @@ $cart.on("click", async (e) => {
   // END RM FROM CART
 });
 /*************** END UPDATE CART ***************/
+
 /***************  GET FAVORITES ***************/
 $(`.favBtn`).on("click", async (e) => {
   $favContainer.toggle();
@@ -741,6 +754,7 @@ $favorites.on("click", async (e) => {
 });
 
 /*************** END GET FAVORITES ***************/
+
 /*************** GET CART ***************/
 $(".cartBtn").on("click", async (e) => {
   $cartContainer.toggle();
@@ -794,4 +808,4 @@ $(".cartBtn").on("click", async (e) => {
   }
 });
 /*************** END GET CART ***************/
-// TO DO ADD CHECKOUT BUTN FOR CART, ADD TOTAL PRICE INDICATOR OF CART WITH DATASET OF CART PRICE AND THEN STYLING
+
