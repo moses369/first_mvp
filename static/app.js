@@ -73,9 +73,9 @@ async function paginationStore(e,item ,onLogin) {
     btn += `<button class='prev pageBtn' data-item=${item} data-page=${page - 1} data-start=${start(page - 1)}><i data-page=${page - 1} data-start=${start(page - 1)} class="fa-solid fa-angle-left"></i><span  data-page=${page - 1} data-start=${start(page - 1)}>Prev</span></button>` 
   }
   if(page >2){
-    btn += `<button class="num btn" data-item=${item} data-page=${1} data-start=${1} >1</button>`;
+    btn += `<button class="num pageBtn" data-item=${item} data-page=${1} data-start=${1} >1</button>`;
     if (page > 3) {
-      btn += `<button class="dot btn">...</button> `;
+      btn += `<button class="dot pageBtn">...</button> `;
     }
   }
 
@@ -104,17 +104,17 @@ async function paginationStore(e,item ,onLogin) {
     } else {
       activeBtn = "";
     }
-    btn += `<button class="num btn ${activeBtn}"  data-item=${item} data-page=${pageNum} data-start=${pageNum ===1 ? 1:start(pageNum)}>${pageNum}</button>`;
+    btn += `<button class="num pageBtn ${activeBtn}"  data-item=${item} data-page=${pageNum} data-start=${pageNum ===1 ? 1:start(pageNum)}>${pageNum}</button>`;
   }
 
   if (page < totalPages - 1) {
     if (page < totalPages - 2) {
-      btn += `<button class="dot btn">...</button> `;
+      btn += `<button class="dot pageBtn">...</button> `;
     }
-    btn += `<button class="num btn"  data-item=${item} data-page=${totalPages} data-start=${start(totalPages)}>${totalPages}</button>`;
+    btn += `<button class="num pageBtn"  data-item=${item} data-page=${totalPages} data-start=${start(totalPages)}>${totalPages}</button>`;
   }
   if (page < totalPages || page) {
-    btn += `<button class='next btn'  data-item=${item} data-page=${page + 1} data-start=${start(page + 1)}> <span data-item=${item}  data-page=${page + 1} data-start=${start(page + 1)}>Next</span><i class="fa-solid fa-angle-right"></i></button>`;
+    btn += `<button class='next pageBtn'  data-item=${item} data-page=${page + 1} data-start=${start(page + 1)}> <span data-item=${item}  data-page=${page + 1} data-start=${start(page + 1)}>Next</span><i class="fa-solid fa-angle-right"></i></button>`;
   }
   $('.pagination').html(btn)
   

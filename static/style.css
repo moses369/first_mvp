@@ -3,7 +3,7 @@
   --font-color: #fff;
   --border-color: rgba(0, 0, 0, 0.2);
   --main-color: #336600;
-  --accent1-color:#f3b800;
+  --accent1-color: #f3b800;
   --accent2-color: #fff;
   --button-border: 1px solid var(--border-color);
   --focus-border-color: #336600;
@@ -12,7 +12,6 @@
   box-sizing: border-box;
   letter-spacing: 0.5px;
   font-family: Arial, Helvetica, sans-serif;
-
 }
 button,
 a,
@@ -36,8 +35,8 @@ a {
   text-decoration: none;
 }
 
-h1:hover{
-color: var(--accent2-color);
+h1:hover {
+  color: var(--accent2-color);
 }
 
 /*************** END GENERAL TAG STYLING ***************/
@@ -98,7 +97,7 @@ color: var(--accent2-color);
 }
 .cartContainer,
 .productResults,
-.favorites{
+.favorites {
   background: var(--accent2-color);
 }
 /*************** END LAYOUT ***************/
@@ -116,12 +115,11 @@ color: var(--accent2-color);
 .product.store .fa-star {
   font-size: 1.75rem;
   color: var(--accent1-color);
-  margin-bottom: .25rem;
-  padding-left: .5rem;
+  margin-bottom: 0.25rem;
+  padding-left: 0.5rem;
   cursor: pointer;
-
 }
-.product.store .fa-star:hover{
+.product.store .fa-star:hover {
   color: var(--accent2-color);
 }
 .image {
@@ -130,17 +128,17 @@ color: var(--accent2-color);
   object-fit: contain;
   align-self: center;
 }
-.product.store .imgWrapper{
+.product.store .imgWrapper {
   width: 100%;
   background: white;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
 }
 .product.store {
   display: flex;
   flex-direction: column;
   width: min(14rem, 14rem);
   margin: 1rem;
-  padding: .5rem 0;
+  padding: 0.5rem 0;
   border: 1px solid var(--border-color);
   border-radius: 0.33rem;
   justify-content: space-between;
@@ -176,13 +174,12 @@ color: var(--accent2-color);
   flex-direction: row;
   flex-wrap: nowrap;
   height: min(7rem, 7rem);
-  padding: .5rem;
+  padding: 0.5rem;
   color: var(--font-color);
 }
-.product.store .description{
-  padding: 0 .5rem;
+.product.store .description {
+  padding: 0 0.5rem;
   color: var(--font-color);
-  
 }
 .product.store .right {
   width: min(100%, 40%);
@@ -222,10 +219,9 @@ color: var(--accent2-color);
   background: var(--accent1-color);
   color: var(--font-color);
 }
-.addToCart button[type="submit"]:hover{
+.addToCart button[type="submit"]:hover {
   background: var(--accent2-color);
   color: var(--main-color);
-
 }
 
 /*************** END STORE PRODUCT STYLING ***************/
@@ -269,9 +265,9 @@ color: var(--accent2-color);
   height: 100%;
   max-width: 45%;
 }
-.product.inCart .row .rm.fromCart:hover{
-color: var(--accent2-color);
-} 
+.product.inCart .row .rm.fromCart:hover {
+  color: var(--accent2-color);
+}
 .product.inCart .row .rm.fromCart {
   width: fit-content;
   height: fit-content;
@@ -321,7 +317,7 @@ color: var(--accent2-color);
   justify-content: space-between;
   align-items: center;
 }
-.cartTotal{
+.cartTotal {
   color: var(--main-color);
 }
 /*************** END CART PRODUCT STYLING ***************/
@@ -371,10 +367,10 @@ color: var(--accent2-color);
   position: absolute;
   bottom: 0.75rem;
 }
-.topbar .nav .icons i{
+.topbar .nav .icons i {
   color: var(--accent1-color);
 }
-.topbar .nav .icons i:hover{
+.topbar .nav .icons i:hover {
   color: var(--accent2-color);
 }
 .cartBtn > span {
@@ -403,17 +399,16 @@ color: var(--accent2-color);
   border-right: 1px solid var(--border-color);
   width: min(17rem, 17rem);
   background: var(--main-color);
-
 }
 .shoppingList h2 {
   text-align: center;
   font-size: 1.75rem;
 }
-input:hover{
-  border:2px solid var(--accent1-color) !important ;
+input:hover {
+  border: 2px solid var(--accent1-color) !important ;
   cursor: pointer;
 }
- input:focus {
+input:focus {
   outline: none !important;
   border: 2px solid var(--accent1-color) !important;
 }
@@ -454,17 +449,16 @@ input:hover{
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: .5rem;
-  border-radius: .5rem;
-  background: rgba(0, 0, 0, .05);
-  
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.05);
 }
-.shoppingList .listWrap{
+.shoppingList .listWrap {
   align-self: center;
   width: 13rem;
 }
 .itemList > .item > a:hover {
-color: var(--accent2-color);
+  color: var(--accent2-color);
 }
 .itemList > .item {
   display: flex;
@@ -479,7 +473,7 @@ color: var(--accent2-color);
 
 .itemList > .item > button:hover {
   color: var(--accent2-color);
-} 
+}
 .itemList > .item > button {
   background: transparent;
   border: none;
@@ -490,13 +484,12 @@ color: var(--accent2-color);
   font-size: 1.5rem;
   text-transform: capitalize;
   color: var(--accent1-color);
-
 }
-.itemList > .item > .line-through{
+.itemList > .item > .line-through {
   text-decoration: line-through;
   color: var(--accent2-color);
 }
-.itemList > .item > .line-through:hover{
+.itemList > .item > .line-through:hover {
   color: var(--accent1-color);
 }
 /*************** END SHOPPING LISTS STYLING ***************/
@@ -510,7 +503,7 @@ color: var(--accent2-color);
 /*************** END FOOTER STYLING ***************/
 
 /***************  LOGIN STYLING ***************/
-.login{
+.login {
   margin: -2rem;
   padding: 5rem;
   width: 100%;
@@ -519,7 +512,7 @@ color: var(--accent2-color);
   color: #336600;
   font-size: 1.2rem;
 }
-.loginWrapper{
+.loginWrapper {
   margin: auto;
   display: flex;
   justify-content: center;
@@ -527,68 +520,91 @@ color: var(--accent2-color);
   align-content: center;
   padding-top: 10%;
 }
-.contentLogin{
+.contentLogin {
   padding: 2rem;
   padding-top: 3rem;
   border: 1px solid var(--border-color);
-  border-radius:1rem ;
+  border-radius: 1rem;
   height: 25rem;
   width: 20rem;
   text-align: center;
-  background:#C0C0C0;
+  background: #c0c0c0;
 }
-.loginForm{
+.loginForm {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.loginForm button{
-font-size: 1.5rem;
-background-color: #f3b800;
-color: black;
-padding: .75rem;
-border-radius: .75rem;
-width: fit-content;
-align-self: center;
-border: var(--button-border);
-
+.loginForm button {
+  font-size: 1.5rem;
+  background-color: #f3b800;
+  color: black;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  width: fit-content;
+  align-self: center;
+  border: var(--button-border);
 }
-.loginForm button:hover{
+.loginForm button:hover {
   background: var(--main-color);
   color: var(--font-color);
 }
-.loginForm input{
-  margin-top: .4rem;
-margin-bottom:2rem ;
-font-size: 1.5rem;
-border-radius: .5rem;
-padding: .3rem;
-padding-left: 1rem;
-border:1px solid var(--border-color);
-background: rgba(90, 84, 84, 0.2);
-color:#336600;
+.loginForm input {
+  margin-top: 0.4rem;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  border-radius: 0.5rem;
+  padding: 0.3rem;
+  padding-left: 1rem;
+  border: 1px solid var(--border-color);
+  background: rgba(90, 84, 84, 0.2);
+  color: #336600;
 }
-.loginForm input:hover{
-  border: 1px solid  #336600 !important;
+.loginForm input:hover {
+  border: 1px solid #336600 !important;
 }
-.loginForm input:focus{
+.loginForm input:focus {
   outline: none !important;
-  border: 1px solid  #336600 !important;
+  border: 1px solid #336600 !important;
 }
 /*************** END LOGIN STYLING ***************/
 /***************  PAGINATION STYLING ***************/
-.pagination{
+.pagination {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: center;
   align-self: center;
 }
-.pageBtn{
-  align-self: center;
-  margin-right: .75rem;
+.pageBtn:hover {
+  color: var(--accent2-color);
+  background: var(--main-color);
 }
-.active{
-  color: red;
+.pageBtn {
+  align-self: center;
+  border-radius: 50%;
+  padding: .2rem;
+  font-size: 1.2rem;
+  width: 2rem;
+  height: 2rem;
+  color: var(--main-color);
+  background: var(--accent1-color);
+  margin-right: 0.75rem;
+  border: var(--button-border);
+}
+.pageBtn.next{
+  width: 4rem !important;
+
+  border-bottom-left-radius: .5rem;
+  border-top-left-radius: .5rem;
+}
+.pageBtn.prev{
+  width: 4rem !important;
+  border-bottom-right-radius: .5rem;
+  border-top-right-radius: .5rem;
+}
+.active {
+  color: var(--accent2-color);
+  background: var(--main-color);
 }
 /*************** END PAGINATION STYLING ***************/
