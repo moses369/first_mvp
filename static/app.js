@@ -21,9 +21,10 @@ async function sendReq(url, options) {
     console.error(err);
   }
 }
-let user_id;
 
 /*************** APP WIDE VARS/HELPER FUNCTIONS ***************/
+let user_id;
+
 const inCartClass = "fa-check";
 const outCartClass = "fa-plus";
 
@@ -113,6 +114,7 @@ $(`.title span`)
     $resultContainer.show();
   });
 ///// END OPEN?CLOSE DIV
+
 ///// PATCH CART PRICE
 async function patchCartprice(newTotal, newQty, productObj) {
   const { product_id } = productObj;
@@ -743,58 +745,58 @@ $favorites.on("click", async (e) => {
 /*************** END GET FAVORITES ***************/
 /*************** GET CART ***************/
 $(".cartBtn").on("click", async (e) => {
- await openCart()
-});
-/*************** END GET CART ***************/
-async function openCart(){
-  $cartContainer.toggle();
-  toggleDivs("cart");
-  $cart.empty();
-  if ($cartContainer.is(":visible")) {
-    let totalPrice = await getCartTotal();
-    totalPrice = totalPrice ? totalPrice : 0;
-    $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
-
-    const options = {
-      method: "GET",
-      headers: { user_id },
-    };
-    const res = await sendReq("/api/cart", options);
-
-    for (const product of res) {
-      const favMap = await getItems(fav_products);
-      const favObj = checkFav(product.product_id, favMap);
-      const cartItem = { ...product, ...favObj };
-      const {
-        product_id,
-        name,
-        image,
-        price,
-        size,
-        refrigerate,
-        item,
-        fav_id,
-        cart_item_id,
-        fav,
-        qty,
-      } = cartItem;
-
-      if (!$cart.find(`.product[data-product_id='${product_id}'`).length) {
-        appendCart(
-          product_id,
-          name,
-          image,
-          price,
-          size,
-          refrigerate,
-          cart_item_id,
-          fav,
-          fav_id,
-          qty,
-          item
-        );
-      }
-    }
-  }
-}
+ });
+ 
+ /*************** END GET CART ***************/
+ async function openCart(){
+   $cartContainer.toggle();
+   toggleDivs("cart");
+   $cart.empty();
+   if ($cartContainer.is(":visible")) {
+     let totalPrice = await getCartTotal();
+     totalPrice = totalPrice ? totalPrice : 0;
+     $cartTotal.text(`$${totalPrice}`).attr("data-total_price", totalPrice);
+ 
+     const options = {
+       method: "GET",
+       headers: { user_id },
+     };
+     const res = await sendReq("/api/cart", options);
+ 
+     for (const product of res) {
+       const favMap = await getItems(fav_products);
+       const favObj = checkFav(product.product_id, favMap);
+       const cartItem = { ...product, ...favObj };
+       const {
+         product_id,
+         name,
+         image,
+         price,
+         size,
+         refrigerate,
+         item,
+         fav_id,
+         cart_item_id,
+         fav,
+         qty,
+       } = cartItem;
+ 
+       if (!$cart.find(`.product[data-product_id='${product_id}'`).length) {
+         appendCart(
+           product_id,
+           name,
+           image,
+           price,
+           size,
+           refrigerate,
+           cart_item_id,
+           fav,
+           fav_id,
+           qty,
+           item
+         );
+       }
+     }
+   }
+ }
 // TO DO ADD CHECKOUT BUTN FOR CART, ADD TOTAL PRICE INDICATOR OF CART WITH DATASET OF CART PRICE AND THEN STYLING
