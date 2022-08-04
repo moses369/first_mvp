@@ -581,8 +581,8 @@ input:focus {
   background: var(--main-color);
 }
 .active {
-  color: var(--accent2-color);
-  background: var(--main-color);
+  color: var(--accent2-color) !important;
+  background: var(--main-color) !important;
 }
 .pageBtn {
   align-self: center;
