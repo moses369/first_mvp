@@ -29,6 +29,7 @@ const token = async () => {
 
 const sendNodeReq = async (req, next, id = "") => {
   try {
+    const {pagination} = req.headers
     const params = new URLSearchParams({
       ...url.parse(req.url, true).query,
     });
@@ -45,13 +46,12 @@ const sendNodeReq = async (req, next, id = "") => {
     );
     if (apiRes.status >= 200 && apiRes.status < 300) {
       const data = await apiRes.json();
-      devLog({APIquery:req.url})
-      return data;
+      devLog({APIquery:req.url,meta:data.meta})
+      return pagination ? {data,meta:data.meta}:data
     } else {
       const body = await apiRes.json();
-      if (NODE_ENV !== "production") {
-        console.error("STATUS CODE", apiRes.status, "\nRESPONSE:", body);
-      }
+      devLog({STATUS_CODE:apiRes.status, RESPONSE: body});
+      
       return apiRes
     }
   } catch (error) {

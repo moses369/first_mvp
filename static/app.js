@@ -3,16 +3,14 @@
 async function sendReq(url, options) {
   try {
     const res = await fetch(url, options);
+    
     if (res.status >= 200 && res.status < 300) {
-      let data;
-      if (res.status !== 204) {
-        data = await res.json();
-      } else {
-        data = await res.text();
-      }
+      const data = res.status !== 204 ? await res.json() : await res.text();
+      
+      
       console.log("RES STATUS", res.status, "~ line 11");
-
-      return data;
+      return data
+      
     } else {
       const body = await res.text();
       console.error("STATUS CODE", res.status, "\nRESPONSE:", body);
@@ -42,6 +40,90 @@ const $cartTotal = $(".cartTotal");
 const cart_items = "cart_items";
 const fav_products = "fav_products";
 
+// PAGINATION
+
+async function paginationStore(e,item ,onLogin) {
+  const start = onLogin ? 1:parseInt(e.target.dataset.start)
+  const page = onLogin ? 1:parseInt(e.target.dataset.page)
+   item = onLogin ? item:e.target.dataset.item
+  const options = {
+    headers:{pagination:true}
+  }
+  const {meta:{pagination},data:{data}} = await sendReq(`/api/products?filter.term=${item}&filter.start=${start}&filter.limit=${10}`,options)
+  const {limit,total} = pagination
+  const totalPages = Math.floor(total/limit)
+
+  
+  console.log({pagination, data});
+
+  
+  createPage(totalPages,page,10,item)
+  await appendResults(data,item,totalPages)
+}
+
+ function createPage(totalPages,page,limit,item){
+  console.log({page});
+
+  let btn =''
+  let prevPage = page -1
+  let nextPage = page + 1
+  let start = (page) => 1+ (limit * (page - 1))
+  let activeBtn;
+  if(page > 1){
+    btn += `<button class='prev pageBtn' data-item=${item} data-page=${page - 1} data-start=${start(page - 1)}><i data-page=${page - 1} data-start=${start(page - 1)} class="fa-solid fa-angle-left"></i><span  data-page=${page - 1} data-start=${start(page - 1)}>Prev</span></button>` 
+  }
+  if(page >2){
+    btn += `<button class="num btn" data-item=${item} data-page=${1} data-start=${1} >1</button>`;
+    if (page > 3) {
+      btn += `<button class="dot btn">...</button> `;
+    }
+  }
+
+  // SHOW HOW MANY PAGES BEFORE WHEN AT END
+  if (page === totalPages) {
+    prevPage = prevPage - 2;
+  } else if (page === totalPages - 1) {
+    prevPage = prevPage - 1;
+  }
+  // SHOW HOW MANY PAGES AFTER WHEN AT BEGINNING
+  if (page === 1) {
+    nextPage = nextPage + 2;
+  } else if (page === 2) {
+    nextPage = nextPage + 1;
+  }
+
+  for (let pageNum = prevPage; pageNum <= nextPage; pageNum++) {
+    if (pageNum > totalPages) {
+      continue;
+    }
+    if (pageNum === 0) {
+      pageNum = pageNum + 1;
+    }
+    if (page === pageNum) {
+      activeBtn = "active";
+    } else {
+      activeBtn = "";
+    }
+    btn += `<button class="num btn ${activeBtn}"  data-item=${item} data-page=${pageNum} data-start=${pageNum ===1 ? 1:start(pageNum)}>${pageNum}</button>`;
+  }
+
+  if (page < totalPages - 1) {
+    if (page < totalPages - 2) {
+      btn += `<button class="dot btn">...</button> `;
+    }
+    btn += `<button class="num btn"  data-item=${item} data-page=${totalPages} data-start=${start(totalPages)}>${totalPages}</button>`;
+  }
+  if (page < totalPages || page) {
+    btn += `<button class='next btn'  data-item=${item} data-page=${page + 1} data-start=${start(page + 1)}> <span data-item=${item}  data-page=${page + 1} data-start=${start(page + 1)}>Next</span><i class="fa-solid fa-angle-right"></i></button>`;
+  }
+  $('.pagination').html(btn)
+  
+}
+$('.pagination').on('click',async e =>{
+await paginationStore(e)
+})
+//END PAGINATION 
+
 /***************  LOGIN  ***************/
 function login() {
   $siteContainer.hide();
@@ -58,14 +140,14 @@ function login() {
       };
       user_id = (await sendReq("/api/users", options)).id;
       console.log({ user_id });
-      await onLogin();
+      await onLogin(e);
       $(`.login input[name='user']`).val("");
     });
 }
 login();
-async function onLogin() {
-  const { data } = await sendReq("/api/products?filter.term=fruits");
-  await appendResults(data, "fruits");
+async function onLogin(e) {
+
+  await paginationStore(e,'fruits',true)
   $(".login").hide();
   $siteContainer.show();
   cartNotif();
@@ -298,7 +380,9 @@ function appendCart(
 //// END APPEND TO CART
 
 //// APPEND TO RESULTS
-async function appendResults(data, item) {
+async function appendResults(data, item, totalPages) {
+
+  $('.productResults').empty()
   const favMap = await getItems(fav_products);
   const cartMap = await getItems(cart_items);
   for (let product of data) {
@@ -449,13 +533,11 @@ $(".shoppingList .itemList").on("click", async (e) => {
   if (url) {
     const item = url.substring(url.indexOf("=") + 1);
     const { data } = await sendReq(url);
-
-    $(".productResults").empty();
     if (data) {
       $(`.resultContainer  h2`)
         .text(`Items Matching: ${item}`)
         .css({ "text-transform": "capitalize" });
-      await appendResults(data, item);
+      await paginationStore(e,item,true)
     }
     console.log({ url, data }, ` line 413`);
     $cartContainer.hide();
@@ -558,7 +640,7 @@ const addItem = async (e) => {
   e.preventDefault();
   const product = e.target.closest(".product");
   console.log(product.dataset, " line 500");
-  
+
   const { product_id, name, image, price, size, refrigerate, item } =
     product.dataset;
   if (
@@ -568,7 +650,6 @@ const addItem = async (e) => {
   ) {
     await openCart(e);
   } else {
-
     const qty = $(
       `.product[data-product_id = '${product_id}'] .addToCart input[name='qty'] `
     ).val();

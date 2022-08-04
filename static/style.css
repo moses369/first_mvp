@@ -576,3 +576,19 @@ color:#336600;
   border: 1px solid  #336600 !important;
 }
 /*************** END LOGIN STYLING ***************/
+/***************  PAGINATION STYLING ***************/
+.pagination{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-self: center;
+}
+.pageBtn{
+  align-self: center;
+  margin-right: .75rem;
+}
+.active{
+  color: red;
+}
+/*************** END PAGINATION STYLING ***************/
