@@ -419,41 +419,7 @@ async function updateLists(item, method) {
   await sendReq("/api/lists", options);
 }
 ////END UPDATE LIST TABLE
-//// REMOVE FROM CART FROM STORE
-// async function rmFromCart(e) {
-//   const product = e.target.closest(".product");
-//   const { product_id, item, cart_item_id, total_price, price } =
-//     product.dataset;
-//   product.remove();
-//   $(
-//     `.productResults .product[data-product_id = '${product_id}'] .addToCart button[type='submit'] i`
-//   )
-//     .addClass(outCartClass)
-//     .removeClass(inCartClass);
 
-//   if (!$(`.cart`).find(`.product[data-item='${item}`).length)
-//     $(`.itemList .itemLink[data-item='${item}']`).css({
-//       "text-decoration": "none",
-//     });
-
-//   let cartCount = parseInt($cartCount.text());
-//   cartCount--;
-//   $cartCount.text(cartCount);
-//   cartNotif();
-
-//   let total = $cartTotal.attr("data-total_price");
-//   $cartTotal.attr("data-total_price", `${(total -= total_price)}`);
-//   $cartTotal.text(`$${total.toFixed(2)}`);
-
-//   const options = {
-//     method: "DELETE",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ usedFor: cart_items }),
-//   };
-
-//   await sendReq(`/api/products/${cart_item_id}`, options);
-// }
-////END REMOVE FROM CART FROM STORE
 
 /*************** END APP WIDE VARS/HELPER FUNCTIONS  ***************/
 
