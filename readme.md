@@ -12,6 +12,7 @@
 - If an user no longers wants an Item they are able to remove all products in their cart by deleting the related word in their shopping lists.
 - Users are able to edit the quanity of a product in their cart from anywhere the product is listed, and will populate as already in the cart if an item is re-queried.
 -  The prices will automatically update whenever the qty is changed, while in the cart and prior allowing users the ability to preview the cost of an item without having to place it in their cart. 
+- Although it is not yet mobile friendly I will update it when time is available.
 
 ## Lessons Learned
 - Seperating your functions by comments describing their purpose helps maintain awareness of each functions purpose when refactoring and improves overall understanding.
