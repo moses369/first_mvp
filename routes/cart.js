@@ -9,13 +9,10 @@ const devLog = (obj) => (NODE_ENV !== "production" ? console.log(obj) : null);
 const cart = express.Router();
 
 /***************  ROUTE TO ITEMS IN CART ***************/
-
-cart
-  .route("/")
-  .get(async (req, res, next) => {
-    try {
-      const { user_id } = req.headers;
-      const items = await sql`SELECT 
+cart.route("/").get(async (req, res, next) => {
+  try {
+    const { user_id } = req.headers;
+    const items = await sql`SELECT 
          products.product_id, name, image,
          price, size, refrigerate, products.item,cart_items.id AS cart_item_id,qty
        FROM cart_items
@@ -24,18 +21,19 @@ cart
        WHERE 
          user_id = ${user_id}
    `;
-      devLog({ retrieved: items, from: "cart_items" });
-      res.status(200).json(items);
-    } catch (error) {
-      next(error);
-    }
-  })
-  
+    devLog({ retrieved: items, from: "cart_items" });
+    res.status(200).json(items);
+  } catch (error) {
+    next(error);
+  }
+});
+
 cart.route("/total").get(async (req, res, next) => {
   try {
     const { user_id } = req.headers;
-    const {total_price} =
-      (await sql` SELECT SUM(total_price) AS total_price  FROM cart_items WHERE user_id = ${user_id}`)[0];
+    const { total_price } = (
+      await sql` SELECT SUM(total_price) AS total_price  FROM cart_items WHERE user_id = ${user_id}`
+    )[0];
     devLog({ total_price });
     res.json(total_price);
   } catch (error) {
@@ -75,8 +73,8 @@ cart
   })
   .post(async (req, res, next) => {
     try {
-      const { qty,total_price,fav_count, user_id, ...product } = req.body;
-      const { product_id} = product;
+      const { qty, total_price, fav_count, user_id, ...product } = req.body;
+      const { product_id } = product;
 
       if (
         !(await sql`SELECT * FROM products WHERE product_id = ${product_id}`)[0]

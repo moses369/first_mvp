@@ -1,4 +1,3 @@
-import sql from "./database/db.js";
 import express from "express";
 import dotenv from "dotenv";
 import products from "./routes/product.js";
@@ -21,6 +20,7 @@ app.use((req, res, next) => {
   devLog({METHOD:req.method,URL:req.url});
   next();
 });
+
 app.use("/api/products", products);
 app.use("/api/cart", cart);
 app.use("/api/users", users);
