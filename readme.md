@@ -12,12 +12,12 @@ Live Site - https://shrouded-shore-15611.herokuapp.com/
 - If an user no longers wants an Item they are able to remove all products in their cart by deleting the related word in their shopping lists.
 - Users are able to edit the quanity of a product in their cart from anywhere the product is listed, and will populate as already in the cart if an item is re-queried.
 -  The prices will automatically update whenever the qty is changed, while in the cart and prior allowing users the ability to preview the cost of an item without having to place it in their cart. 
-- Although it is not yet mobile friendly I will update it when time is available.
+
 
 ## Lessons Learned
 - Seperating your functions by comments describing their purpose helps maintain awareness of each functions purpose when refactoring and improves overall understanding.
 - For some reason when JQuery form events are fired off they send off multiple results based on how many times they have have been cicked, prior. In order to accomodate I had to utilize ` $('element').unbind('event').bind('event',callback function)` in order to only get it to fire off once. Subsequentially on input change events the very first change is not picked up for some reason.
-- HTML data-sets are very variable when interacting with the DOM, and storing information regarding elements to interact with the backend.
+- HTML data-sets are very valuable when interacting with the DOM, and storing information regarding elements to interact with the backend.
 - Creating your functionality first and then styling after, may cause issues as elements are no longer in the same hierarchy, however utilizing `element.closest('element')` may possibly resolve any hierachly issues.
 - How to properly utilize an OAuth token when making API calls, and utilize my server as a proxy in order to bypass the CORS error.
 
