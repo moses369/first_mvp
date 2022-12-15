@@ -14,7 +14,7 @@ const devLog = (obj) => NODE_ENV !== "production" ? console.log(obj):null;
 
 app.use(cors());
 app.set("proxy server", 1);
-app.use(express.static("static"));
+app.use(express.static("public"));
 app.use(express.json());
 app.use((req, res, next) => {
   devLog({METHOD:req.method,URL:req.url});
