@@ -9,15 +9,32 @@
 ## About
  My very first full stack app, I had a very fun time creating this application and deepened my understanding about how the frontend and backend of an application interacts with each other. The goal was to create our very first Minimal Viable Product integrating persistent storage through PostgreSql, while running on an express server following REST standards. As my first full stack app I wanted to create something useful while, keeping it basic. It does not have any checkout functionality as the goal was to create a basic MVP versus a fully functional e-commerce store. I thoroughly enjoyed my time creating this app and can not wait to keep improving and learn further.    
 
+
 ## Project Overview
-Shopping List allows users shop based off their created shopping list. 
 
-## Features
--  Users shop based off of their lists, items are crossed off their list as they are added to the shopping cart.
-- If an user no longers wants an Item they are able to remove all products in their cart by deleting the related word in their shopping lists.
-- Users are able to edit the quanity of a product in their cart from anywhere the product is listed, and will populate as already in the cart if an item is re-queried.
--  The prices will automatically update whenever the qty is changed, while in the cart and prior allowing users the ability to preview the cost of an item without having to place it in their cart. 
+- [Adding Items](#adding-items)
+- [Changing Quanity](#changing-quanity) 
+- [Removing Items](#removing-items)
 
+### Adding Items  
+![User adding an item to cart](./images/adding.gif)
+> Users are able to add an item to their cart, resulting in the item being crossed off in their list and a notification showing how many items are in their cart displayed
+>
+> Users can favorite items and it will persist until unfavorited
+>
+> When users no longer have items with their keyword in their cart, their list item will be un-crossed
+
+### Changing Quanity
+![User changing item quanity](./images/price.gif)
+> Item quanity can be changed and the price previewed, prior to adding it to a user's cart
+>
+> After being added to the cart a user can change the quanity anywhere the item and it will accuratley reflect what is in the cart
+
+### Removing Items
+![User removing items from cart](./images/delete.gif)
+> A user can remove items individually in the cart
+>
+> A user can also remove all cart items associated with the item in their shopping list by deleting it from their shopping list
 
 ## Lessons Learned
 - Seperating your functions by comments describing their purpose helps maintain awareness of each functions purpose when refactoring and improves overall understanding.
