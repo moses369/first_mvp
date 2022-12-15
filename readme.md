@@ -1,5 +1,6 @@
 <h1>  MVP Shopping Lists </h1>
 <a href='https://shopping-list-heur.onrender.com/#' target='_blank'>Live Site</a>
+
 ## About
  My very first full stack app, I had a very fun time creating this application and deepened my understanding about how the frontend and backend of an application interacts with each other. The goal was to create our very first Minimal Viable Product integrating persistent storage through PostgreSql, while running on a express server following REST standards. As my first full stack app I wanted to create something useful while, keeping it basic. It does not have any e-commerce functionality as the goal was to create a basic MVP versus a fully functional e-commerce store. I thoroughly enjoyed my time creating this app and can not wait to keep improving and learn further.    
 
