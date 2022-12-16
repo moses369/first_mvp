@@ -1,9 +1,24 @@
 <h1>  MVP Shopping Lists </h1>
 <a href='https://shopping-list-heur.onrender.com/#' target='_blank'>Live Site</a>
 
+## Tech Stack
+<p>
+  <img src="https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=white&style=for-the-badge" height=30>
+  <img src="https://img.shields.io/badge/-JQuery-0769AD?logo=jquery&logoColor=white&style=for-the-badge" height=30>
+  <img src="https://img.shields.io/badge/-CSS3-1572B6?logo=css3&logoColor=white&style=for-the-badge" height=30>
+  <img src="https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white&style=for-the-badge" height=30>
+</p>
+<p >
+  <img src="https://img.shields.io/badge/-NodeJs-339933?logo=node.js&logoColor=white&style=for-the-badge" height=30>
+  <img src="https://img.shields.io/badge/-Express-black?logo=express&logoColor=white&style=for-the-badge" height=30>
+  <img src="https://img.shields.io/badge/-PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=for-the-badge" height=30>
+  <img src="https://img.shields.io/badge/-Git-F05032?logo=git&logoColor=white&style=for-the-badge" height=30>
+</p>
+
 ## Table of Contents
 - [About](#about)
 - [Project Overview](#project-overview)
+- [Lessons Learned](#lessons-learned)
 
 
 ## About
@@ -19,21 +34,21 @@
 ### Adding Items  
 ![User adding an item to cart](./images/adding.gif)
 > Users are able to add an item to their cart, resulting in the item being crossed off in their list and a notification showing how many items are in their cart displayed
->
+
 > Users can favorite items and it will persist until unfavorited
->
+
 > When users no longer have items with their keyword in their cart, their list item will be un-crossed
 
 ### Changing Quanity
 ![User changing item quanity](./images/price.gif)
 > Item quanity can be changed and the price previewed, prior to adding it to a user's cart
->
+
 > After being added to the cart a user can change the quanity anywhere the item and it will accuratley reflect what is in the cart
 
 ### Removing Items
 ![User removing items from cart](./images/delete.gif)
 > A user can remove items individually in the cart
->
+
 > A user can also remove all cart items associated with the item in their shopping list by deleting it from their shopping list
 
 ## Lessons Learned
@@ -45,12 +60,4 @@
 
 
 
-### Code Stack
-- JavaScript
-- CSS
-- HTML
-- Postgres
-- NodeJs
-- Jquery
-- Express
-- PostrgeSql
+
